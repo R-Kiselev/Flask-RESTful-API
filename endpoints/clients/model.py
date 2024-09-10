@@ -1,4 +1,5 @@
-from app import db
+from settings import db
+from endpoints.accounts.model import Account
 
 class Client(db.Model):
     __tablename__ = 'clients'

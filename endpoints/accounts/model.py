@@ -1,4 +1,5 @@
-from app import db
+from settings import db
+from endpoints.cards.model import Card
 
 class Account(db.Model):
     __tablename__ = 'accounts'

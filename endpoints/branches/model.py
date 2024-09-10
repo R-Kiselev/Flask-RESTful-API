@@ -1,4 +1,6 @@
-from app import db
+from settings import db
+from endpoints.banks.model import Bank
+from endpoints.cities.model import City
 
 class Branch(db.Model):
     __tablename__ = 'branches'

@@ -1,4 +1,4 @@
-from app import db
+from settings import db
 
 class Card(db.Model):
     __tablename__ = 'cards'

@@ -1,4 +1,5 @@
-from app import db
+from settings import db
+from endpoints.clients.model import Client
 
 class SocialStatus(db.Model):
     __tablename__ = 'social_statuses'
