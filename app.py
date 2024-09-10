@@ -11,6 +11,8 @@ db = SQLAlchemy(app)
 api = Api(app)
 
 # Add resources
+from endpoints.banks.resource import BanksResource
+api.add_resource(BanksResource,'/banks', '/banks/<int:bank_id>')
 
-if __name__ == __main__:
+if __name__ == '__main__':
     app.run(debug= True)
