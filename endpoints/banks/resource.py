@@ -55,11 +55,14 @@ class BanksResource(Resource):
     
     @marshal_with(bank_fields)
     def put(self, bank_id = None):
-        bank = Bank.query.get_or_404(id = bank_id)
-        if 'id' in request.json():
+        bank = Bank.query.get_or_404(bank_id)
+
+        if 'id' in request.get_json():
             bank.id = request.json['id']
-        if 'name' in request.json():
+        if 'name' in request.get_json():
             bank.name = request.json['name']
 
         db.session.commit()
+
         return bank
+    
