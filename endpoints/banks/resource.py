@@ -66,3 +66,11 @@ class BanksResource(Resource):
 
         return bank
     
+    @marshal_with(bank_fields)
+    def delete(self, bank_id = None):
+        bank = Bank.query.get(bank_id)
+
+        db.session.delete(bank)
+        db.session.commit()
+
+        return bank
