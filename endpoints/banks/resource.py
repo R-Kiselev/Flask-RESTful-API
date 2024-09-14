@@ -37,7 +37,7 @@ class BanksResource(Resource):
             if offset:
                 banks = banks.offset(offset)
             banks = banks.all()
-            if not banks:
+            if not banks and (request_args or limit or offset):
                 return abort(404, description = "No banks found matching the criteria")
 
             return marshal({
