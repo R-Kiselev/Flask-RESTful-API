@@ -1,4 +1,4 @@
-from flask_restful import Resource, request, reqparse
+from flask_restful import Resource, request, reqparse, abort
 from flask_restful import fields, marshal, marshal_with
 from .model import Bank
 from settings import db
@@ -20,7 +20,7 @@ args_parser.add_argument('name', type=str, required=True, help="Bank name cannot
 class BanksResource(Resource):
     def get(self, bank_id = None):
         if bank_id:
-            bank = Bank.query.filter_by(id=bank_id).first()
+            bank = Bank.query.get_or_404(bank_id, description = "No banks found matching the criteria")
             return marshal(bank, bank_fields)
         else:
             request_args = request.args.to_dict()
@@ -36,16 +36,22 @@ class BanksResource(Resource):
                 banks = banks.limit(limit)
             if offset:
                 banks = banks.offset(offset)
-            
             banks = banks.all()
+            if not banks:
+                return abort(404, description = "No banks found matching the criteria")
+
             return marshal({
                 'total': len(banks),
                 'banks': marshal([bank for bank in banks], bank_fields)
             }, bank_list_fields)
 
     @marshal_with(bank_fields)
-    def post(self):      
+    def post(self):  
         args = args_parser.parse_args()
+        if args['id']:
+            existing_bank = Bank.query.get(args['id'])
+            if existing_bank:
+                abort(409, description = "Bank with such id already exists")
         bank = Bank(**args)
 
         db.session.add(bank)
@@ -55,7 +61,7 @@ class BanksResource(Resource):
     
     @marshal_with(bank_fields)
     def put(self, bank_id = None):
-        bank = Bank.query.get_or_404(bank_id)
+        bank = Bank.query.get_or_404(bank_id, description= 'Bank does not exist')
 
         if 'id' in request.get_json():
             bank.id = request.json['id']
@@ -68,7 +74,7 @@ class BanksResource(Resource):
     
     @marshal_with(bank_fields)
     def delete(self, bank_id = None):
-        bank = Bank.query.get(bank_id)
+        bank = Bank.query.get_or_404(bank_id, description= 'Bank does not exist')
 
         db.session.delete(bank)
         db.session.commit()
