@@ -14,5 +14,8 @@ api = Api(app)
 from endpoints.banks.resource import BanksResource
 api.add_resource(BanksResource,'/banks','/banks/<int:bank_id>')
 
+from endpoints.cities.resource import CityResource
+api.add_resource(CityResource,'/cities','/cities/<int:city_id>')
+
 if __name__ == '__main__':
     app.run(debug= True)
