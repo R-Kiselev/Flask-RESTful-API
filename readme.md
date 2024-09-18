@@ -36,10 +36,11 @@ This project implements RESTful API for a simple banking system.
 ## Running
 
 1. Clone repository.
-2. pip install requirements.txt
-3. Create MySQL database on your computer.
-4. In db_settings change SQLALCHEMY_DATABASE_URI
-5. Start server by running app.py
+2. Create python venv
+3. pip install requirements.txt
+4. Create MySQL database on your computer.
+5. In db_settings.py change SQLALCHEMY_DATABASE_URI
+6. Start server by running app.py file or using command: "python app.py"
 
 ## Usage
 
