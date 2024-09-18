@@ -33,4 +33,4 @@ from endpoints.cards.resource import CardResource
 api.add_resource(CardResource, '/cards', '/cards/<int:id>')
 
 if __name__ == '__main__':
-    app.run(debug= True)
+    app.run(debug= True, ssl_context = 'adhoc')
