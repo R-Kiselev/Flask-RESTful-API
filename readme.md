@@ -29,7 +29,7 @@ This project implements RESTful API for a simple banking system.
 * **endpoints** ── holds all endpoints.
 * **base_resource.py** ── contains a base class from which all resources are inherited.
 * **model.py** ── database table model.
-* **resource.py** ── class representing an API endpoint.
+* **resource.py** ── class representing an API methods.
 * **app.py** ── flask application initialization.
 * **db_settings.py** ── database settings required for the application.
 
@@ -49,7 +49,7 @@ Query parameters are supported in CRUD operations.
 You can filter data using **limit**, **offset** and table fields.
 
 ### Bank endpoints
-GET http://localhost:5000/banks?offset=6&limit=2
+GET https://localhost:5000/banks?offset=6&limit=2
 
 RESPONSE
 ```json
@@ -67,8 +67,8 @@ RESPONSE
         }
     ]
 }
-
-POST http://localhost:5000/banks
+```
+POST https://localhost:5000/banks
 
 REQUEST
 ```json
@@ -85,7 +85,7 @@ RESPONSE
 }
 ```
 
-PUT http://localhost:5000/banks/13
+PUT https://localhost:5000/banks/13
 
 REQUEST
 ```json
@@ -101,7 +101,7 @@ RESPONSE
     "name": "Bank of Germany"
 }
 ```
-DELETE http://localhost:5000/banks/13
+DELETE https://localhost:5000/banks/13
 
 RESPONSE
 ```json
