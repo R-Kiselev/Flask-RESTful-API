@@ -1,4 +1,4 @@
-from settings import db
+from db_settings import db
 from endpoints.cards.model import Card
 
 class Account(db.Model):

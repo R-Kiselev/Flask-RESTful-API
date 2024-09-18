@@ -1,4 +1,4 @@
-from settings import db
+from db_settings import db
 from endpoints.accounts.model import Account
 
 class Client(db.Model):

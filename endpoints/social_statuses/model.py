@@ -1,4 +1,4 @@
-from settings import db
+from db_settings import db
 from endpoints.clients.model import Client
 
 class SocialStatus(db.Model):

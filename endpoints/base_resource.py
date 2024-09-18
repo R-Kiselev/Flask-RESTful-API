@@ -1,6 +1,6 @@
 from flask_restful import Resource, request, reqparse, abort
 from flask_restful import fields, marshal
-from settings import db
+from db_settings import db
 from sqlalchemy.exc import IntegrityError
 
 class BaseResource(Resource):
