@@ -1,4 +1,4 @@
-from settings import db
+from db_settings import db
 from endpoints.banks.model import Bank
 from endpoints.cities.model import City
 
