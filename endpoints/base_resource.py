@@ -49,7 +49,7 @@ class BaseResource(Resource):
         db.session.add(item)
         try:
             db.session.commit()
-        except IntegrityError as e:
+        except IntegrityError:
             db.session.rollback()
             abort(400, description="Invalid foreign key, item does not exist")
 
@@ -62,7 +62,7 @@ class BaseResource(Resource):
 
         try:
             db.session.commit()
-        except IntegrityError as e:
+        except IntegrityError:
             db.session.rollback()
             abort(400, description="Invalid foreign key, item does not exist")
 
