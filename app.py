@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 import db_settings as database
 
 app = Flask(__name__)
+app.config['WTF_CSRF_ENABLED'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = database.SQLALCHEMY_DATABASE_URI
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = database.SQLALCHEMY_TRACK_MODIFICATIONS
 
@@ -33,4 +34,5 @@ from endpoints.cards.resource import CardResource
 api.add_resource(CardResource, '/cards', '/cards/<int:id>')
 
 if __name__ == '__main__':
-    app.run(debug= True, ssl_context = 'adhoc')
+    app.debug = False
+    app.run(ssl_context = 'adhoc')
