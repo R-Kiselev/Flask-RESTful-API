@@ -1,6 +1,6 @@
 from flask_restful import reqparse, fields
 from endpoints.base_resource import BaseResource
-from .model import Card
+from models.card_model import Card
 
 class CardResource(BaseResource):
     model = Card

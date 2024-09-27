@@ -1,6 +1,6 @@
 from flask_restful import reqparse, fields
 from endpoints.base_resource import BaseResource
-from .model import Account
+from models.account_model import Account
 
 class AccountResource(BaseResource):
     model = Account

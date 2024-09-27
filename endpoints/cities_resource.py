@@ -1,6 +1,6 @@
 from flask_restful import reqparse, fields
 from endpoints.base_resource import BaseResource
-from .model import City
+from models.city_model import City
 
 class CityResource(BaseResource):
     model = City

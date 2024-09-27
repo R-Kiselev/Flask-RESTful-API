@@ -1,6 +1,6 @@
 from flask_restful import reqparse, fields
 from endpoints.base_resource import BaseResource
-from .model import Branch
+from models.branch_model import Branch
 
 class BranchResource(BaseResource):
     model = Branch

@@ -1,6 +1,6 @@
 from flask_restful import reqparse, fields
 from endpoints.base_resource import BaseResource
-from .model import Client
+from models.client_model import Client
 
 class ClientResource(BaseResource):
     model = Client
