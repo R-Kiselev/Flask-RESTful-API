@@ -1,5 +1,5 @@
 from db_settings import db
-from endpoints.accounts.model import Account
+from models.account_model import Account
 
 class Bank(db.Model):
     __tablename__ = 'banks'
