@@ -10,7 +10,9 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = database.SQLALCHEMY_TRACK_MODIFIC
 
 database.db.init_app(app)
 api = Api(app)
+
 '''
+
 Филиалы банка:
 
 GET /banks/branches/{id} — получить информацию о конкретном филиале.
@@ -35,32 +37,33 @@ GET /accounts/{id}/cards — получить список карт для ко�
 2) Главное логику вынести в сервис, чтобы не дублировать код
 3) Использовать marshmallow вместо reqparser  
 '''
+
 # Add resources
-from endpoints.banks import Bank
+from resources.banks import Bank
 api.add_resource(Bank,'/banks','/banks/<int:id>')
 
-from endpoints.cities import City
+from resources.cities import City
 api.add_resource(City,'/cities','/cities/<int:id>')
 
-from endpoints.social_statuses import SocialStatus
+from resources.social_statuses import SocialStatus
 api.add_resource(SocialStatus,'/social_statuses','/social-statuses/<int:id>')
 
-from endpoints.clients import Client
+from resources.clients import Client
 api.add_resource(Client,'/clients','/clients/<int:id>')
 
 
 
-from endpoints.branches import Branch
+from resources.branches import Branch
 #   ,'/banks/<int:id>/branches'
 api.add_resource(Branch,'/banks/branches/<int:id>')
 
-from endpoints.accounts import Account
+from resources.accounts import Account
 #   , '/banks/<int:id>/accounts'
 #   , '/clients/<int:id>/accounts'
 #   , '/clients/<int:id>/accounts/<int:id>'
 api.add_resource(Account, '/banks/accounts/<int:id>')
 
-from endpoints.cards import Card
+from resources.cards import Card
 #   , '/accounts/<int:id>/cards'
 api.add_resource(Card, '/accounts/cards/<int:id>')
 

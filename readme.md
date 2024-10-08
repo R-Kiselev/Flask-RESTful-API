@@ -12,7 +12,7 @@ This project implements RESTful API for a simple banking system.
 ```
 .
 │
-├── endpoints/                   
+├── resources/                   
 │   ├── accounts/
 │   │   ├── model.py
 │   │   └── resource.py
@@ -26,7 +26,7 @@ This project implements RESTful API for a simple banking system.
 ├── db_settings.py
 ```
 
-* **endpoints** ── holds all endpoints.
+* **resources** ── holds all resources.
 * **base_resource.py** ── contains a base class from which all resources are inherited.
 * **model.py** ── database table model.
 * **resource.py** ── class representing an API methods.
@@ -48,7 +48,7 @@ Postman is used to work with the program.
 Query parameters are supported in CRUD operations.
 You can filter data using **limit**, **offset** and table fields.
 
-### Bank endpoints
+### Bank resources
 GET https://localhost:5000/banks?offset=6&limit=2
 
 RESPONSE
@@ -111,4 +111,4 @@ RESPONSE
 }
 ```
 
-Other endpoints are similar to Banks endpoint.
+Other resources are similar to Banks endpoint.

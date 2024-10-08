@@ -1,5 +1,5 @@
 from flask_restful import reqparse, fields
-from endpoints.base import Base
+from resources.base import Base
 from models.account import Account
 
 class Account(Base):

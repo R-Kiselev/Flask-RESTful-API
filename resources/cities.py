@@ -1,9 +1,9 @@
 from flask_restful import reqparse, fields
-from endpoints.base import Base
-from models.bank import Bank
+from resources.base import Base
+from models.city import City
 
-class Bank(Base):
-    model = Bank
+class City(Base):
+    model = City
     
     item_fields = {
         'id': fields.Integer,
@@ -17,5 +17,5 @@ class Bank(Base):
     }
 
     args_parser = reqparse.RequestParser()
-    args_parser.add_argument('id', type=int, help="Bank id should be integer")
-    args_parser.add_argument('name', type=str, required=True, help="Bank name cannot be empty")    
+    args_parser.add_argument('id', type=int, help="City id should be integer")
+    args_parser.add_argument('name', type=str, required=True, help="City name cannot be empty")  
