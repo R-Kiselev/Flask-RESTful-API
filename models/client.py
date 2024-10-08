@@ -1,5 +1,5 @@
 from db_settings import db
-from models.account_model import Account
+from models.account import Account
 
 class Client(db.Model):
     __tablename__ = 'clients'

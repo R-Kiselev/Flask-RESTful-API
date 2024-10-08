@@ -1,8 +1,8 @@
 from flask_restful import reqparse, fields
-from endpoints.base_resource import BaseResource
-from models.branch_model import Branch
+from endpoints.base import Base
+from models.branch import Branch
 
-class BranchResource(BaseResource):
+class Branch(Base):
     model = Branch
     
     item_fields = {

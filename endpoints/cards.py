@@ -1,8 +1,8 @@
 from flask_restful import reqparse, fields
-from endpoints.base_resource import BaseResource
-from models.card_model import Card
+from endpoints.base import Base
+from models.card import Card
 
-class CardResource(BaseResource):
+class Card(Base):
     model = Card
     
     item_fields = {
@@ -21,3 +21,4 @@ class CardResource(BaseResource):
     args_parser.add_argument('id', type=int, help="Card id should be integer")
     args_parser.add_argument('balance', type=int, default = 0, help="Card balance should be integer")
     args_parser.add_argument('account_id', type=int, required = True, help="Account id cannot be empty")
+

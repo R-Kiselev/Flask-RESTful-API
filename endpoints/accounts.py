@@ -1,8 +1,8 @@
 from flask_restful import reqparse, fields
-from endpoints.base_resource import BaseResource
-from models.account_model import Account
+from endpoints.base import Base
+from models.account import Account
 
-class AccountResource(BaseResource):
+class Account(Base):
     model = Account
     
     item_fields = {

@@ -10,28 +10,59 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = database.SQLALCHEMY_TRACK_MODIFIC
 
 database.db.init_app(app)
 api = Api(app)
+'''
+Филиалы банка:
 
+GET /banks/branches/{id} — получить информацию о конкретном филиале.
+GET /banks/{id}/branches — получить список филиалов конкретного банка.
+
+Счета:
+
+GET /banks/accounts/{id} — получить информацию о конкретном счете.
+GET /banks/{id}/accounts — получить все счета банка.
+
+GET /clients/{id}/accounts — получить список счетов конкретного клиента.
+GET /clients/{id}/accounts/{id} — получить счет конкретного клиента.
+
+Карты:
+
+GET /accounts/cards/{id} — получить список карт для конкретного счета.
+GET /accounts/{id}/cards — получить список карт для конкретного счета.
+
+
+Советы:
+1) Создание кстати хорошо сделать через /banks/id/accounts
+2) Главное логику вынести в сервис, чтобы не дублировать код
+3) Использовать marshmallow вместо reqparser  
+'''
 # Add resources
-from endpoints.banks_resource import BankResource
-api.add_resource(BankResource,'/banks','/banks/<int:id>')
+from endpoints.banks import Bank
+api.add_resource(Bank,'/banks','/banks/<int:id>')
 
-from endpoints.cities_resource import CityResource
-api.add_resource(CityResource,'/cities','/cities/<int:id>')
+from endpoints.cities import City
+api.add_resource(City,'/cities','/cities/<int:id>')
 
-from endpoints.branches_resource import BranchResource
-api.add_resource(BranchResource,'/branches','/branches/<int:id>')
+from endpoints.social_statuses import SocialStatus
+api.add_resource(SocialStatus,'/social_statuses','/social-statuses/<int:id>')
 
-from endpoints.social_statuses_resource import SocialStatusResource
-api.add_resource(SocialStatusResource,'/social_statuses','/social_statuses/<int:id>')
+from endpoints.clients import Client
+api.add_resource(Client,'/clients','/clients/<int:id>')
 
-from endpoints.clients_resource import ClientResource
-api.add_resource(ClientResource,'/clients','/clients/<int:id>')
 
-from endpoints.accounts_resource import AccountResource
-api.add_resource(AccountResource, '/accounts', '/accounts/<int:id>')
 
-from endpoints.cards_resource import CardResource
-api.add_resource(CardResource, '/cards', '/cards/<int:id>')
+from endpoints.branches import Branch
+#   ,'/banks/<int:id>/branches'
+api.add_resource(Branch,'/banks/branches/<int:id>')
+
+from endpoints.accounts import Account
+#   , '/banks/<int:id>/accounts'
+#   , '/clients/<int:id>/accounts'
+#   , '/clients/<int:id>/accounts/<int:id>'
+api.add_resource(Account, '/banks/accounts/<int:id>')
+
+from endpoints.cards import Card
+#   , '/accounts/<int:id>/cards'
+api.add_resource(Card, '/accounts/cards/<int:id>')
 
 if __name__ == '__main__':
     app.debug = False
