@@ -3,7 +3,7 @@ from flask_restful import fields, marshal
 from db_settings import db
 from sqlalchemy.exc import IntegrityError
 
-class Base(Resource):
+class BaseResource(Resource):
     model = None
     item_fields = {}
     item_list_fields = {}

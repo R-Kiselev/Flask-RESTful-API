@@ -1,8 +1,8 @@
 from flask_restful import reqparse, fields
-from resources.base import Base
+from resources.base import BaseResource
 from models.card import Card
 
-class Card(Base):
+class CardResource(BaseResource):
     model = Card
     
     item_fields = {
