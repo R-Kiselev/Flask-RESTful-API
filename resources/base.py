@@ -1,77 +1,57 @@
-from flask_restful import Resource, request, reqparse, abort
-from flask_restful import fields, marshal
+from flask import request
+from flask_restful import Resource
 from db_settings import db
-from sqlalchemy.exc import IntegrityError
+from marshmallow import Schema
+from commons.pagination import paginate
 
-class BaseResource(Resource):
+class BaseObjectResource(Resource):
     model = None
-    item_fields = {}
-    item_list_fields = {}
-    args_parser = None
+    schema = Schema
 
     def get(self, id=None):
-        if id:
-            item = self.model.query.get_or_404(id, description=f'No {self.model.__name__.lower()} found matching the criteria')
-            return marshal(item, self.item_fields)
-        else:
-            request_args = request.args.to_dict()
-            limit = request_args.get('limit', 0)
-            offset = request_args.get('offset', 0)
-
-            request_args.pop('limit', None)
-            request_args.pop('offset', None)
-
-            items = self.model.query.filter_by(**request_args)
-
-            if limit:
-                items = items.limit(limit)
-            if offset:
-                items = items.offset(offset)
-
-            items = items.all()
-            if not items and (request_args or limit or offset):
-                return abort(404, description=f'No {self.model.__name__.lower()} found matching the criteria')
-
-            return marshal({
-                'table_name': self.model.__name__,
-                'total': len(items),
-                'items': marshal([item for item in items], self.item_fields)
-            }, self.item_list_fields)
-
-    def post(self):
-        args = self.args_parser.parse_args()
-        if args['id']:
-            existing_item = self.model.query.get(args['id'])
-            if existing_item:
-                abort(409, description=f'{self.model.__name__.lower()} with such id already exists')
-        item = self.model(**args)
-
-        db.session.add(item)
-        try:
-            db.session.commit()
-        except IntegrityError:
-            db.session.rollback()
-            abort(400, description="Invalid foreign key, item does not exist")
-
-        return marshal(item, self.item_fields)
-    
+        item = self.model.query.get_or_404(id, description=f'No {self.model.__name__.lower()} found matching the criteria')
+        return self.schema.dump(item), 200
+            
     def put(self, id=None):
         item = self.model.query.get_or_404(id, description=f'{self.model.__name__.lower()} does not exist')
-        for field in request.get_json():
-            setattr(item, field, request.json[field])
+        
+        data = self.schema.load(request.json, partial=True)
+        for key, value in data.items():
+            setattr(item, key, value)
 
-        try:
-            db.session.commit()
-        except IntegrityError:
-            db.session.rollback()
-            abort(400, description="Invalid foreign key, item does not exist")
-
-        return marshal(item, self.item_fields)
-    
+        db.session.commit()
+        return {
+            "msg": "item updated",
+            "item": self.schema.dump(item)
+        }, 200
+           
     def delete(self, id=None):
         item = self.model.query.get_or_404(id, description=f'{self.model.__name__.lower()} does not exist')
 
         db.session.delete(item)
         db.session.commit()
 
-        return marshal(item, self.item_fields)
+        return {
+            "msg" : "item deleted",
+            "item" : self.schema.dump(item)
+        }, 204
+    
+class BaseListResource(Resource):
+    model = None
+    schema = Schema
+
+    def get(self):
+        query = self.model.query        
+        return paginate(query, self.schema)
+    
+    def post(self):
+        data = self.schema.load(request.json)
+        item = self.model(**data)
+
+        db.session.add(item)
+        db.session.commit()
+
+        return {
+            "msg" : "item created",
+            "item" : self.schema.dump(item)
+        }, 201
