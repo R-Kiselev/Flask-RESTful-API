@@ -1,21 +1,11 @@
-from flask_restful import reqparse, fields
-from resources.base import BaseResource
+from resources.base import BaseObjectResource, BaseListResource
 from models.bank import Bank
+from schemas.bank import BankSchema
 
-class BankResource(BaseResource):
+class BankObjectResource(BaseObjectResource):
     model = Bank
-    
-    item_fields = {
-        'id': fields.Integer,
-        'name': fields.String
-    }
+    schema = BankSchema()
 
-    item_list_fields = {
-        'table_name': fields.String,
-        'total': fields.Integer,
-        'items': fields.List(fields.Nested(item_fields))
-    }
-
-    args_parser = reqparse.RequestParser()
-    args_parser.add_argument('id', type=int, help="Bank id should be integer")
-    args_parser.add_argument('name', type=str, required=True, help="Bank name cannot be empty")    
+class BankListResource(BaseListResource):
+    model = Bank
+    schema = BankSchema()
