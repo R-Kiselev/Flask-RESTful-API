@@ -1,21 +1,11 @@
-from flask_restful import reqparse, fields
-from resources.base import BaseObjectResource
+from resources.base import BaseObjectResource, BaseListResource
 from models.city import City
+from schemas.city import CitySchema
 
-class CityResource(BaseObjectResource):
+class CityObjectResource(BaseObjectResource):
     model = City
-    
-    item_fields = {
-        'id': fields.Integer,
-        'name': fields.String
-    }
+    schema = CitySchema()
 
-    item_list_fields = {
-        'table_name': fields.String,
-        'total': fields.Integer,
-        'items': fields.List(fields.Nested(item_fields))
-    }
-
-    args_parser = reqparse.RequestParser()
-    args_parser.add_argument('id', type=int, help="City id should be integer")
-    args_parser.add_argument('name', type=str, required=True, help="City name cannot be empty")  
+class CityListResource(BaseListResource):
+    model = City
+    schema = CitySchema()

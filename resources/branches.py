@@ -1,23 +1,11 @@
-from flask_restful import reqparse, fields
-from resources.base import BaseObjectResource
+from resources.base import BaseObjectResource, BaseListResource
 from models.branch import Branch
+from schemas.branch import BranchSchema
 
-class BranchResource(BaseObjectResource):
+class BranchObjectResource(BaseObjectResource):
     model = Branch
-    
-    item_fields = {
-        'id': fields.Integer,
-        'bank_id': fields.Integer,
-        'city_id': fields.Integer
-    }
+    schema = BranchSchema()
 
-    item_list_fields = {
-        'table_name': fields.String,
-        'total': fields.Integer,
-        'items': fields.List(fields.Nested(item_fields))
-    }
-
-    args_parser = reqparse.RequestParser()
-    args_parser.add_argument('id', type=int, help="Branch id should be integer")
-    args_parser.add_argument('bank_id', type=int, required=True, help="Bank id cannot be empty")
-    args_parser.add_argument('city_id', type=int, required=True, help="City id cannot be empty")   
+class BranchListResource(BaseListResource):
+    model = Branch
+    schema = BranchSchema()

@@ -1,24 +1,11 @@
-from flask_restful import reqparse, fields
-from resources.base import BaseObjectResource
+from resources.base import BaseObjectResource, BaseListResource
 from models.card import Card
+from schemas.card import CardSchema
 
-class CardResource(BaseObjectResource):
+class CardObjectResource(BaseObjectResource):
     model = Card
-    
-    item_fields = {
-        'id': fields.Integer,
-        'balance': fields.Integer,
-        'account_id': fields.Integer,
-    }
+    schema = CardSchema()
 
-    item_list_fields = {
-        'table_name': fields.String,
-        'total': fields.Integer,
-        'items': fields.List(fields.Nested(item_fields))
-    }
-
-    args_parser = reqparse.RequestParser()
-    args_parser.add_argument('id', type=int, help="Card id should be integer")
-    args_parser.add_argument('balance', type=int, default = 0, help="Card balance should be integer")
-    args_parser.add_argument('account_id', type=int, required = True, help="Account id cannot be empty")
-
+class CardListResource(BaseListResource):
+    model = Card
+    schema = CardSchema()

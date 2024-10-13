@@ -1,21 +1,11 @@
-from flask_restful import reqparse, fields
-from resources.base import BaseObjectResource
+from resources.base import BaseObjectResource, BaseListResource
 from models.social_status import SocialStatus
+from schemas.social_status import SocialStatusSchema
 
-class SocialStatusResource(BaseObjectResource):
+class SocialStatusObjectResource(BaseObjectResource):
     model = SocialStatus
-    
-    item_fields = {
-        'id': fields.Integer,
-        'name': fields.String
-    }
+    schema = SocialStatusSchema()
 
-    item_list_fields = {
-        'table_name': fields.String,
-        'total': fields.Integer,
-        'items': fields.List(fields.Nested(item_fields))
-    }
-
-    args_parser = reqparse.RequestParser()
-    args_parser.add_argument('id', type=int, help="Social status id should be integer")
-    args_parser.add_argument('name', type=str, required=True, help="Social status name cannot be empty")    
+class SocialStatusListResource(BaseListResource):
+    model = SocialStatus
+    schema = SocialStatusSchema()
