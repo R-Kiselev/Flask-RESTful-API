@@ -1,8 +1,8 @@
 from flask_restful import reqparse, fields
-from resources.base import BaseResource
+from resources.base import BaseObjectResource
 from models.social_status import SocialStatus
 
-class SocialStatusResource(BaseResource):
+class SocialStatusResource(BaseObjectResource):
     model = SocialStatus
     
     item_fields = {

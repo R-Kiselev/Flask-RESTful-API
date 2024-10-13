@@ -1,8 +1,8 @@
 from flask_restful import reqparse, fields
-from resources.base import BaseResource
+from resources.base import BaseObjectResource
 from models.client import Client
 
-class ClientResource(BaseResource):
+class ClientResource(BaseObjectResource):
     model = Client
     
     item_fields = {

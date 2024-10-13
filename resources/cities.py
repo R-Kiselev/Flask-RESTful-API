@@ -1,8 +1,8 @@
 from flask_restful import reqparse, fields
-from resources.base import BaseResource
+from resources.base import BaseObjectResource
 from models.city import City
 
-class CityResource(BaseResource):
+class CityResource(BaseObjectResource):
     model = City
     
     item_fields = {
