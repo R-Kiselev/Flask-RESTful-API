@@ -7,12 +7,12 @@ from db_settings import db
 from commons.pagination import paginate
 
 
-class BranchObjectResource(BaseObjectResource):
+class BankBranchObjectRes(BaseObjectResource):
     model = Branch
     schema = BranchSchema()
 
 
-class BranchesBankResource(Resource):
+class BankBranchListRes(Resource):
     schema = BranchSchema()
 
     def get(self, bank_id = None):

@@ -1,11 +1,11 @@
-from resources.base import BaseObjectResource, BaseListResource
+from commons.base_resources import BaseObjectResource, BaseListResource
 from models.city import City
 from schemas.city import CitySchema
 
-class CityObjectResource(BaseObjectResource):
+class CityObjectRes(BaseObjectResource):
     model = City
     schema = CitySchema()
 
-class CityListResource(BaseListResource):
+class CityListRes(BaseListResource):
     model = City
     schema = CitySchema()

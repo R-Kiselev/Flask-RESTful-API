@@ -7,7 +7,7 @@ from db_settings import db
 from commons.pagination import paginate
 
 
-class AccountsBankResource(Resource):
+class BankAccountListRes(Resource):
     schema = AccountSchema()
 
     def get(self, bank_id=None):
@@ -15,11 +15,11 @@ class AccountsBankResource(Resource):
         return paginate(query, self.schema)
 
 
-class AccountBankResource(BaseObjectResource):
+class BankAccountObjectRes(BaseObjectResource):
     model = Account
     schema = AccountSchema()
 
-class AccountsClientResource(Resource):
+class ClientAccountListRes(Resource):
     schema = AccountSchema()
 
     def get(self, client_id = None):
@@ -42,7 +42,7 @@ class AccountsClientResource(Resource):
         }, 201
     
 
-class AccountClientResource(Resource):
+class ClientAccountObjectRes(Resource):
     schema = AccountSchema()
 
     def get(self, client_id = None, account_id = None):

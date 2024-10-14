@@ -6,7 +6,7 @@ from flask_restful import Resource, request
 from db_settings import db
 from commons.pagination import paginate
 
-class CardObjectResource(BaseObjectResource):
+class AccountCardObjectRes(BaseObjectResource):
     model = Card
     schema = CardSchema()
 
@@ -14,7 +14,7 @@ class CardListResource(BaseListResource):
     model = Card
     schema = CardSchema()
 
-class CardsAccountResource(Resource):
+class AccountCardListRes(Resource):
     schema = CardSchema()
 
     def get(self, account_id = None):

@@ -21,35 +21,35 @@ def handle_marshmallow_error(e):
     return jsonify(e.messages), 400
 
 # Add resources
-from resources.banks import BankObjectResource, BankListResource
-api.add_resource(BankListResource, '/banks')
-api.add_resource(BankObjectResource, '/banks/<int:id>')
+from resources.banks import BankObjectRes, BankListRes
+api.add_resource(BankListRes, '/banks')
+api.add_resource(BankObjectRes, '/banks/<int:id>')
 
-from resources.cities import CityObjectResource, CityListResource
-api.add_resource(CityListResource, '/cities')
-api.add_resource(CityObjectResource, '/cities/<int:id>')
+from resources.cities import CityObjectRes, CityListRes
+api.add_resource(CityListRes, '/cities')
+api.add_resource(CityObjectRes, '/cities/<int:id>')
 
-from resources.social_statuses import SocialStatusObjectResource, SocialStatusListResource
-api.add_resource(SocialStatusListResource,'/social-statuses')
-api.add_resource(SocialStatusObjectResource,'/social-statuses/<int:id>')
+from resources.social_statuses import SocialStatusObjectRes, SocialStatusListRes
+api.add_resource(SocialStatusListRes,'/social-statuses')
+api.add_resource(SocialStatusObjectRes,'/social-statuses/<int:id>')
 
-from resources.clients import ClientObjectResource, ClientListResource
-api.add_resource(ClientListResource,'/clients')
-api.add_resource(ClientObjectResource, '/clients/<int:id>')
+from resources.clients import ClientObjectRes, ClientListRes
+api.add_resource(ClientListRes,'/clients')
+api.add_resource(ClientObjectRes, '/clients/<int:id>')
 
-from resources.branches import BranchObjectResource, BranchListResource
-#   ,'/banks/<int:id>/branches'
-api.add_resource(BranchObjectResource,'/banks/branches/<int:id>')
+from resources.branches import BankBranchObjectRes, BankBranchListRes
+api.add_resource(BankBranchListRes,'/banks/<int:bank_id>/branches')
+api.add_resource(BankBranchObjectRes,'/banks/branches/<int:id>')
 
-from resources.accounts import AccountObjectResource, AccountListResource
-# #   , '/banks/<int:id>/accounts'
-# #   , '/clients/<int:id>/accounts'
-# #   , '/clients/<int:id>/accounts/<int:id>'
-api.add_resource(AccountObjectResource, '/banks/accounts/<int:id>')
+from resources.accounts import BankAccountObjectRes, ClientAccountListRes, ClientAccountObjectRes, BankAccountListRes
+api.add_resource(BankAccountObjectRes, '/banks/accounts/<int:id>')
+api.add_resource(BankAccountListRes, '/banks/<int:bank_id>/accounts')
+api.add_resource(ClientAccountListRes, '/clients/<int:client_id>/accounts')
+api.add_resource(ClientAccountObjectRes, '/clients/<int:client_id>/accounts/<int:account_id>')
 
-from resources.cards import CardObjectResource, CardListResource
-#   , '/accounts/<int:id>/cards'
-api.add_resource(CardObjectResource, '/accounts/cards/<int:id>')
+from resources.cards import AccountCardObjectRes, AccountCardListRes
+api.add_resource(AccountCardListRes, '/accounts/<int:account_id>/cards')
+api.add_resource(AccountCardObjectRes, '/accounts/cards/<int:id>')
 
 app.register_blueprint(blueprint, url_prefix="/api")
 

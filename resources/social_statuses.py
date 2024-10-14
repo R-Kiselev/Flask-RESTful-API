@@ -1,11 +1,11 @@
-from resources.base import BaseObjectResource, BaseListResource
+from commons.base_resources import BaseObjectResource, BaseListResource
 from models.social_status import SocialStatus
 from schemas.social_status import SocialStatusSchema
 
-class SocialStatusObjectResource(BaseObjectResource):
+class SocialStatusObjectRes(BaseObjectResource):
     model = SocialStatus
     schema = SocialStatusSchema()
 
-class SocialStatusListResource(BaseListResource):
+class SocialStatusListRes(BaseListResource):
     model = SocialStatus
     schema = SocialStatusSchema()
