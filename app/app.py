@@ -1,7 +1,7 @@
 from flask import Flask, Blueprint, jsonify
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
-import db_settings as database
+import app.db_settings as database
 from flask_marshmallow import Marshmallow
 from marshmallow import ValidationError
 

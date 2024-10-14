@@ -1,6 +1,6 @@
 from flask import request
 from flask_restful import Resource
-from db_settings import db
+from app.db_settings import db
 from marshmallow import Schema
 from commons.pagination import paginate
 

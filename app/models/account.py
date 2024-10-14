@@ -1,4 +1,4 @@
-from db_settings import db
+from app.db_settings import db
 from models.card import Card
 
 class Account(db.Model):

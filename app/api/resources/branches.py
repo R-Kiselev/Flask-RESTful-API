@@ -3,7 +3,7 @@ from models.branch import Branch
 from schemas.branch import BranchSchema
 
 from flask_restful import Resource, request
-from db_settings import db
+from app.db_settings import db
 from commons.pagination import paginate
 
 

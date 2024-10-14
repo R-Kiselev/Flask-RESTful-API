@@ -3,7 +3,7 @@ from models.card import Card
 from schemas.card import CardSchema
 
 from flask_restful import Resource, request
-from db_settings import db
+from app.db_settings import db
 from commons.pagination import paginate
 
 class AccountCardObjectRes(BaseObjectResource):

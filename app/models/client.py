@@ -1,4 +1,4 @@
-from db_settings import db
+from app.db_settings import db
 from models.account import Account
 
 class Client(db.Model):

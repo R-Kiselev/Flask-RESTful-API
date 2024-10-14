@@ -1,4 +1,4 @@
-from db_settings import db
+from app.db_settings import db
 from models.bank import Bank
 from models.city import City
 

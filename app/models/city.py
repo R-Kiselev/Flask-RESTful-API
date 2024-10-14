@@ -1,4 +1,4 @@
-from db_settings import db
+from app.db_settings import db
 
 class City(db.Model):
     __tablename__ = 'cities'
