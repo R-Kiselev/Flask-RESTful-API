@@ -1,5 +1,5 @@
-from app.db_settings import db
-from models.card import Card
+from app.extensions import db
+from app.models.card import Card
 
 class Account(db.Model):
     __tablename__ = 'accounts'

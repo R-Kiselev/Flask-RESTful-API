@@ -1,10 +1,10 @@
-from commons.base_resources import BaseObjectResource
-from models.branch import Branch
-from schemas.branch import BranchSchema
+from app.commons.base_resources import BaseObjectResource
+from app.models.branch import Branch
+from app.api.schemas.branch import BranchSchema
 
 from flask_restful import Resource, request
-from app.db_settings import db
-from commons.pagination import paginate
+from app.extensions import db
+from app.commons.pagination import paginate
 
 
 class BankBranchObjectRes(BaseObjectResource):

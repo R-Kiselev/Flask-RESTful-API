@@ -1,5 +1,5 @@
-from app.db_settings import db
-from models.client import Client
+from app.extensions import db
+from app.models.client import Client
 
 class SocialStatus(db.Model):
     __tablename__ = 'social_statuses'

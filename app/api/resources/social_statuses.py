@@ -1,6 +1,6 @@
-from commons.base_resources import BaseObjectResource, BaseListResource
-from models.social_status import SocialStatus
-from schemas.social_status import SocialStatusSchema
+from app.commons.base_resources import BaseObjectResource, BaseListResource
+from app.models.social_status import SocialStatus
+from app.api.schemas.social_status import SocialStatusSchema
 
 class SocialStatusObjectRes(BaseObjectResource):
     model = SocialStatus

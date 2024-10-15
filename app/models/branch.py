@@ -1,6 +1,6 @@
-from app.db_settings import db
-from models.bank import Bank
-from models.city import City
+from app.extensions import db
+from app.models.bank import Bank
+from app.models.city import City
 
 class Branch(db.Model):
     __tablename__ = 'branches'

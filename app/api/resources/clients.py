@@ -1,6 +1,6 @@
-from commons.base_resources import BaseObjectResource, BaseListResource
-from models.client import Client
-from schemas.client import ClientSchema
+from app.commons.base_resources import BaseObjectResource, BaseListResource
+from app.models.client import Client
+from app.api.schemas.client import ClientSchema
 
 class ClientObjectRes(BaseObjectResource):
     model = Client

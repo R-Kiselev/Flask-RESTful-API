@@ -1,10 +1,10 @@
-from commons.base_resources import BaseObjectResource, BaseListResource
-from models.card import Card
-from schemas.card import CardSchema
+from app.commons.base_resources import BaseObjectResource, BaseListResource
+from app.models.card import Card
+from app.api.schemas.card import CardSchema
 
 from flask_restful import Resource, request
-from app.db_settings import db
-from commons.pagination import paginate
+from app.extensions import db
+from app.commons.pagination import paginate
 
 class AccountCardObjectRes(BaseObjectResource):
     model = Card

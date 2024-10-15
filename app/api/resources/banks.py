@@ -1,6 +1,6 @@
-from commons.base_resources import BaseObjectResource, BaseListResource
-from models.bank import Bank
-from schemas.bank import BankSchema
+from app.commons.base_resources import BaseObjectResource, BaseListResource
+from app.models.bank import Bank
+from app.api.schemas.bank import BankSchema
 
 class BankObjectRes(BaseObjectResource):
     model = Bank
