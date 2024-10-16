@@ -170,6 +170,7 @@ DELETE https://localhost:5000/api/accounts/cards/1
 
 RESPONSE
 ```json
+200 OK
 {
     "msg": "item deleted",
     "item": {
