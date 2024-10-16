@@ -13,6 +13,22 @@ class BankAccountListRes(Resource):
     def get(self, bank_id=None):
         query = Account.query.filter(Account.bank_id == bank_id)
         return paginate(query, self.schema)
+    
+    def post(self, bank_id = None):
+        req = request.json
+        req['bank_id'] = bank_id
+
+        data = self.schema.load(request.json)
+        item = Account(**data)
+
+        db.session.add(item)
+        db.session.commit()
+
+        return {
+            "msg" : "item created",
+            "item" : self.schema.dump(item)
+        }, 201
+
 
 
 class BankAccountObjectRes(BaseObjectResource):
