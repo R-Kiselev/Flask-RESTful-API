@@ -2,113 +2,182 @@
 
 This project implements RESTful API for a simple banking system. 
 
+## Features
+
+* Simple flask application using application factory, blueprints
+* Simple pagination utils
+* Configuration using environment variables
+
 ## Main libraries used
 
-1. Flask-RESTful ── restful API library.
-2. Flask-SQLAlchemy ── adds support for SQLAlchemy ORM.
-3. PyMySQL ── used to work with MySQL database
+1. Flask ─ A lightweight web framework for building web applications.
+2. Flask-RESTful ─ A library that simplifies building RESTful APIs with Flask.
+3. Flask-SQLAlchemy ─ Adds support for SQLAlchemy ORM, enabling database interaction.
+4. PyMySQL ─ A MySQL client library for Python, used to connect to MySQL databases.
+5. marshmallow ─ A library for data serialization and validation, useful for API schemas.
+6. python-dotenv ─ Reads key-value pairs from a .env file and can set them as environment variables. 
 
 ## Project structure
-```
-.
-│
-├── resources/                   
-│   ├── accounts/
-│   │   ├── model.py
-│   │   └── resource.py
-│   ├── banks/
-│   │   ├── model.py
-│   │   └── resource.py
-│   │── ...
-│   └── base_resource.py
-├── app.py
-├── requirements.txt
-├── db_settings.py
-```
+    ```
+    .
+    │
+    ├── app/                   
+    │   ├── api/
+    │   │   ├── resources/
+    │   │   │   ├── accounts.py
+    │   │   │   ├── ...
+    │   │   ├── schemas/
+    │   │   │   ├── account.py
+    │   │   │   ├── ...
+    │   │   ├── error_handling.py
+    │   │   └── views.py
+    │   ├── commons/
+    │   │   ├── base_resources.py
+    │   │   └── pagination.py
+    │   ├── models/
+    │   │   ├── account.py
+    │   │   ├── ...
+    │   │── app.py
+    │   │── config.py
+    │   └── extensions.py
+    ├── wsgi.py
+    ├── requirements.txt
+    └── .env
+    ```
 
-* **resources** ── holds all resources.
-* **base_resource.py** ── contains a base class from which all resources are inherited.
-* **model.py** ── database table model.
-* **resource.py** ── class representing an API methods.
-* **app.py** ── flask application initialization.
-* **db_settings.py** ── database settings required for the application.
+* **resources** ── Defines RESTful resources for different API endpoints.
+* **schemas.py** ── Contains Marshmallow schemas for data serialization and validation.
+* **error_handling.py** ── Manages error handling and logging for the API.
+* **views.py** ── Registers API blueprint and endpoint routes.
+* **commons/** ── Holds reusable utilities.
+* **models/** ── Defines database models for the application entities.
+* **app.py** ── Holds flask application factory.
+* **config.py** ── Holds configuration settings for the application.
+* **wsgi.py** ── Entry point for running the Flask application.
+* **requirements.txt** ── Lists dependencies required for the project.
+* **.env** ── Stores environment variables for secure configuration.
 
-## Running
+## Installation
 
+### Create project
 1. Clone repository.
 2. Create python venv
 3. pip install requirements.txt
-4. Create MySQL database on your computer.
-5. In db_settings.py change SQLALCHEMY_DATABASE_URI
+4. Init database on your computer.
+5. Configure .env file
 6. Start server by running app.py file or using command: "python app.py"
+
+### Configuration
+Configuration is handled by environment variables, for development purpose you just
+need to update / add entries in `.env` file.
+
+It's filled by default with following content:
+
+```
+SQLALCHEMY_DATABASE_URI = 'dialect+driver://username:password@host:port/database'
+SQLALCHEMY_TRACK_MODIFICATIONS = False
+DEBUG = True
+```
+Available configuration keys (for now):
+
+* `DATABASE_URI`: SQLAlchemy connection string, ex. 'mysql+pymysql://root:pass@localhost/mybank'
 
 ## Usage
 
 Postman is used to work with the program.
 Query parameters are supported in CRUD operations.
-You can filter data using **limit**, **offset** and table fields.
+You can paginate data using **page**, **per_page** and table fields.
 
 ### Bank resources
-GET https://localhost:5000/banks?offset=6&limit=2
+GET https://localhost:5000/api/accounts/1/cards
 
 RESPONSE
 ```json
+200 OK
 {
-    "table_name": "Bank",
-    "total": 2,
-    "items": [
+    "total": 4,
+    "pages": 1,
+    "next": "/api/accounts/1/cards?page=1&per_page=5",
+    "prev": "/api/accounts/1/cards?page=1&per_page=5",
+    "results": [
         {
-            "id": 7,
-            "name": "Bank of America"
+            "id": 1,
+            "balance": 300,
+            "account_id": 1
         },
         {
-            "id": 8,
-            "name": "Bank of China"
+            "id": 2,
+            "balance": 500,
+            "account_id": 1
+        },
+        {
+            "id": 5,
+            "balance": 500,
+            "account_id": 1
+        },
+        {
+            "id": 7,
+            "balance": 500,
+            "account_id": 1
         }
     ]
 }
 ```
-POST https://localhost:5000/banks
+POST https://localhost:5000/api/accounts/1/cards
 
 REQUEST
 ```json
 {
-    "name" : "Deutsche Bank"
+    "balance" : 520
 }
 ```
 
 RESPONSE
 ```json
+201 CREATED
 {
-    "id": 13,
-    "name": "Deutsche Bank"
+    "msg": "item created",
+    "item": {
+        "id": 8,
+        "balance": 520,
+        "account_id": 1
+    }
 }
 ```
 
-PUT https://localhost:5000/banks/13
+PUT https://localhost:5000/api/accounts/cards/1
 
 REQUEST
 ```json
 {
-    "name" : "Bank of Germany"
+    "balance" : 600
 }
 ```
 
 RESPONSE
 ```json
+200 OK
 {
-    "id": 13,
-    "name": "Bank of Germany"
+    "msg": "item updated",
+    "item": {
+        "id": 1,
+        "balance": 600,
+        "account_id": 1
+    }
 }
 ```
-DELETE https://localhost:5000/banks/13
+DELETE https://localhost:5000/api/accounts/cards/1
 
 RESPONSE
 ```json
 {
-    "id": 13,
-    "name": "Bank of Germany"
+    "msg": "item deleted",
+    "item": {
+        "id": 1,
+        "balance": 600,
+        "account_id": 1
+    }
 }
 ```
 
-Other resources are similar to Banks endpoint.
+Other resources are similar to Cards endpoints.
