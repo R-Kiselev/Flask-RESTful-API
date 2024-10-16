@@ -9,11 +9,11 @@ class BaseObjectResource(Resource):
     schema = Schema
 
     def get(self, id=None):
-        item = self.model.query.get_or_404(id, description=f'The {self.model.__name__.lower()} with {id} was not found')
+        item = self.model.query.get_or_404(id, description=f'The {self.model.__name__.lower()} with id={id} was not found')
         return self.schema.dump(item), 200
             
     def put(self, id=None):
-        item = self.model.query.get_or_404(id, description=f'The {self.model.__name__.lower()} with {id} does not exist')
+        item = self.model.query.get_or_404(id, description=f'The {self.model.__name__.lower()} with id={id} does not exist')
         
         data = self.schema.load(request.json, partial=True)
         for key, value in data.items():
@@ -26,7 +26,7 @@ class BaseObjectResource(Resource):
         }, 200
            
     def delete(self, id=None):
-        item = self.model.query.get_or_404(id, description=f'The {self.model.__name__.lower()} with {id} does not exist')
+        item = self.model.query.get_or_404(id, description=f'The {self.model.__name__.lower()} with id={id} does not exist')
 
         db.session.delete(item)
         db.session.commit()
@@ -34,7 +34,7 @@ class BaseObjectResource(Resource):
         return {
             "msg" : "item deleted",
             "item" : self.schema.dump(item)
-        }, 204
+        }, 200
     
 class BaseListResource(Resource):
     model = None

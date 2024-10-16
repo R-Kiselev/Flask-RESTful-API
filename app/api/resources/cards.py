@@ -10,9 +10,6 @@ class AccountCardObjectRes(BaseObjectResource):
     model = Card
     schema = CardSchema()
 
-class CardListResource(BaseListResource):
-    model = Card
-    schema = CardSchema()
 
 class AccountCardListRes(Resource):
     schema = CardSchema()

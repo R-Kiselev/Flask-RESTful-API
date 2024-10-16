@@ -64,13 +64,13 @@ class ClientAccountObjectRes(Resource):
     def get(self, client_id = None, account_id = None):
         account = Account.query.\
             filter(Account.client_id == client_id).\
-            filter(Account.id == account_id).first()
+            filter(Account.id == account_id).first_or_404(description=f'Account with id={account_id} was not found')
         return self.schema.dump(account), 200
 
     def put(self, client_id = None, account_id = None):
         account = Account.query.\
             filter(Account.client_id == client_id).\
-            filter(Account.id == account_id).first()
+            filter(Account.id == account_id).first_or_404(description=f'Account with id={account_id} was not found')
         
         data = self.schema.load(request.json, partial = True)
         for key, value in data.items():
@@ -85,7 +85,7 @@ class ClientAccountObjectRes(Resource):
     def delete(self, client_id = None, account_id = None):
         account = Account.query.\
             filter(Account.client_id == client_id).\
-            filter(Account.id == account_id).first()
+            filter(Account.id == account_id).first_or_404(description=f'Account with id={account_id} was not found')
         
         db.session.delete(account)
         db.session.commit()
