@@ -1,6 +1,6 @@
 from marshmallow import Schema, fields
 from marshmallow import validates, ValidationError
-
+import re
 class ClientSchema(Schema):
     id = fields.Int(dump_only= True)
     name = fields.Str(required= True)
@@ -8,8 +8,8 @@ class ClientSchema(Schema):
     
     @validates("name")
     def validate_name(self, value):
-        if not value.replace(" ", "").isalpha():
-            raise ValidationError("Client name must contain only alphabetic characters and spaces.")
+        if not re.match(r"^[A-Za-z\s\-']+$", value):
+            raise ValidationError("Client name must contain only alphabetic characters, spaces, hyphens, and apostrophes.")
     
     @validates("social_status_id")
     def validate_social_status_id(self, value):
