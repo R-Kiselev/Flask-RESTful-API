@@ -1,6 +1,7 @@
 # Flask-restful API
 
-This project implements RESTful API for a simple banking system. 
+This project implements RESTful API for a simple banking system.
+Inspired by the structure and some solutions from the project https://github.com/karec/cookiecutter-flask-restful
 
 ## Features
 
@@ -65,7 +66,7 @@ This project implements RESTful API for a simple banking system.
 3. pip install requirements.txt
 4. Init database on your computer.
 5. Configure .env file
-6. Start server by running app.py file or using command: "python app.py"
+6. Start server by running wsgi.py file or using command: "python wsgi.py"
 
 ### Configuration
 Configuration is handled by environment variables, for development purpose you just
@@ -86,7 +87,7 @@ Available configuration keys (for now):
 
 Postman is used to work with the program.
 Query parameters are supported in CRUD operations.
-You can paginate data using **page**, **per_page** and table fields.
+You can paginate data using **page**, **per_page** and filter data by table fields.
 
 ### Bank resources
 GET https://localhost:5000/api/accounts/1/cards
