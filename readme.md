@@ -1,7 +1,7 @@
 # Flask-restful API
 
 This project implements RESTful API for a simple banking system.
-Inspired by the structure and some solutions from the project https://github.com/karec/cookiecutter-flask-restful
+Inspired by the structure and some solutions from the [cookiecutter-flask-restful](https://github.com/karec/cookiecutter-flask-restful) project.
 
 ## Features
 
