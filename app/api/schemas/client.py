@@ -1,6 +1,7 @@
 from marshmallow import Schema, fields
 from marshmallow import validates, ValidationError
-import re
+from app.commons.validation_utils import validate_name, validate_id
+
 class ClientSchema(Schema):
     id = fields.Int(dump_only= True)
     name = fields.Str(required= True)
@@ -8,10 +9,8 @@ class ClientSchema(Schema):
     
     @validates("name")
     def validate_name(self, value):
-        if not re.match(r"^[A-Za-z\s\-']+$", value):
-            raise ValidationError("Client name must contain only alphabetic characters, spaces, hyphens, and apostrophes.")
+        validate_name(value)
     
     @validates("social_status_id")
     def validate_social_status_id(self, value):
-        if value <= 0:
-            raise ValidationError("Social Status ID must be a positive integer.")
+        validate_id(value)

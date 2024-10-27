@@ -1,5 +1,6 @@
 from marshmallow import Schema, fields
 from marshmallow import validates, ValidationError
+from app.commons.validation_utils import validate_balance, validate_id
 
 class CardSchema(Schema):
     id = fields.Int(dump_only= True)
@@ -8,10 +9,8 @@ class CardSchema(Schema):
 
     @validates("balance")
     def validate_balance(self, value):
-        if value < 0:
-            raise ValidationError("Balance must be a positive integer.")
+        validate_balance(value)
 
     @validates("account_id")
     def validate_account_id(self, value):
-        if value <= 0:
-            raise ValidationError("Account ID must be a positive integer.")
+        validate_id(value)

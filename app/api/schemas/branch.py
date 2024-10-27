@@ -1,5 +1,6 @@
 from marshmallow import Schema, fields
 from marshmallow import validates, ValidationError
+from app.commons.validation_utils import validate_id
 
 class BranchSchema(Schema):
     id = fields.Int(dump_only= True)
@@ -8,10 +9,8 @@ class BranchSchema(Schema):
 
     @validates("bank_id")
     def validate_bank_id(self, value):
-        if value <= 0:
-            raise ValidationError("Bank ID must be a positive integer.")
+        validate_id(value)
     
     @validates("city_id")
     def validate_city_id(self, value):
-        if value <= 0:
-            raise ValidationError("City ID must be a positive integer.")
+        validate_id(value)
