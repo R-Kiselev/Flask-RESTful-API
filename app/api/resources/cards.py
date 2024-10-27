@@ -2,16 +2,17 @@ from app.commons.base_resources import BaseObjectResource, BaseListResource
 from app.models.card import Card
 from app.api.schemas.card import CardSchema
 
-from flask_restful import Resource, request
+from flask_restful import request
 from app.extensions import db
 from app.commons.pagination import paginate
 
-class AccountCardObjectRes(BaseObjectResource):
+class CardObjectRes(BaseObjectResource):
     model = Card
     schema = CardSchema()
 
 
-class AccountCardListRes(Resource):
+class AccountCardListRes(BaseListResource):
+    model = Card
     schema = CardSchema()
 
     def get(self, account_id = None):
@@ -22,13 +23,4 @@ class AccountCardListRes(Resource):
         req = request.json
         req['account_id'] = account_id
 
-        data = self.schema.load(request.json)
-        item = Card(**data)
-
-        db.session.add(item)
-        db.session.commit()
-
-        return {
-            "msg" : "item created",
-            "item" : self.schema.dump(item)
-        }, 201
+        return super().post()

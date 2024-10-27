@@ -1,4 +1,4 @@
-from app.commons.base_resources import BaseObjectResource
+from app.commons.base_resources import BaseObjectResource, BaseListResource
 from app.models.branch import Branch
 from app.api.schemas.branch import BranchSchema
 
@@ -7,12 +7,12 @@ from app.extensions import db
 from app.commons.pagination import paginate
 
 
-class BankBranchObjectRes(BaseObjectResource):
+class BranchObjectRes(BaseObjectResource):
     model = Branch
     schema = BranchSchema()
 
 
-class BankBranchListRes(Resource):
+class BranchListRes(BaseListResource):
     schema = BranchSchema()
 
     def get(self, bank_id = None):
@@ -22,14 +22,5 @@ class BankBranchListRes(Resource):
     def post(self, bank_id = None):
         req = request.json
         req['bank_id'] = bank_id
-
-        data = self.schema.load(request.json)
-        item = Branch(**data)
-
-        db.session.add(item)
-        db.session.commit()
-
-        return {
-            "msg" : "item created",
-            "item" : self.schema.dump(item)
-        }, 201
+        
+        return super().post()

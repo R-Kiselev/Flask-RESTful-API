@@ -1,4 +1,4 @@
-from app.commons.base_resources import BaseObjectResource
+from app.commons.base_resources import BaseObjectResource, BaseListResource
 from app.models.account import Account
 from app.api.schemas.account import AccountSchema
 
@@ -7,35 +7,28 @@ from app.extensions import db
 from app.commons.pagination import paginate
 
 
-class BankAccountListRes(Resource):
+class AccountObjectRes(BaseObjectResource):
+    model = Account
     schema = AccountSchema()
 
-    def get(self, bank_id=None):
+
+class BankAccountListRes(BaseListResource):
+    model = Account
+    schema = AccountSchema()
+    
+    def get(self, bank_id = None):
         query = Account.query.filter(Account.bank_id == bank_id)
         return paginate(query, self.schema)
-    
+
     def post(self, bank_id = None):
         req = request.json
         req['bank_id'] = bank_id
 
-        data = self.schema.load(request.json)
-        item = Account(**data)
-
-        db.session.add(item)
-        db.session.commit()
-
-        return {
-            "msg" : "item created",
-            "item" : self.schema.dump(item)
-        }, 201
+        return super().post()
 
 
-
-class BankAccountObjectRes(BaseObjectResource):
+class ClientAccountListRes(BaseListResource):
     model = Account
-    schema = AccountSchema()
-
-class ClientAccountListRes(Resource):
     schema = AccountSchema()
 
     def get(self, client_id = None):
@@ -46,51 +39,4 @@ class ClientAccountListRes(Resource):
         req = request.json
         req['client_id'] = client_id
 
-        data = self.schema.load(request.json)
-        item = Account(**data)
-
-        db.session.add(item)
-        db.session.commit()
-
-        return {
-            "msg" : "item created",
-            "item" : self.schema.dump(item)
-        }, 201
-    
-
-class ClientAccountObjectRes(Resource):
-    schema = AccountSchema()
-
-    def get(self, client_id = None, account_id = None):
-        account = Account.query.\
-            filter(Account.client_id == client_id).\
-            filter(Account.id == account_id).first_or_404(description=f'Account with id={account_id} was not found')
-        return self.schema.dump(account), 200
-
-    def put(self, client_id = None, account_id = None):
-        account = Account.query.\
-            filter(Account.client_id == client_id).\
-            filter(Account.id == account_id).first_or_404(description=f'Account with id={account_id} was not found')
-        
-        data = self.schema.load(request.json, partial = True)
-        for key, value in data.items():
-            setattr(account, key, value)
-
-        db.session.commit()
-        return {
-            "msg": "item updated",
-            "item": self.schema.dump(account)
-        }, 200
-    
-    def delete(self, client_id = None, account_id = None):
-        account = Account.query.\
-            filter(Account.client_id == client_id).\
-            filter(Account.id == account_id).first_or_404(description=f'Account with id={account_id} was not found')
-        
-        db.session.delete(account)
-        db.session.commit()
-
-        return {
-            "msg" : "item deleted",
-            "item" : self.schema.dump(account)
-        }, 204
+        return super().post()
