@@ -41,3 +41,15 @@ api.add_resource(AccountObjectRes, '/accounts/<int:id>')
 from app.api.resources.cards import CardObjectRes, AccountCardListRes
 api.add_resource(AccountCardListRes, '/accounts/<int:account_id>/cards')
 api.add_resource(CardObjectRes, '/cards/<int:id>')
+
+
+# Users
+from app.api.resources.users import UserObjectResource, UserListResource
+api.add_resource(UserListResource, '/users')
+api.add_resource(UserObjectResource, '/users/<int:id>')
+
+
+# Roles
+from app.api.resources.roles import RoleObjectRes, RoleListRes
+api.add_resource(RoleListRes, '/users/roles')
+api.add_resource(RoleObjectRes, '/users/roles/<int:id>')
