@@ -1,8 +1,10 @@
 from flask import Flask
 
 from app import api
-from app.extensions import db, migrate
+from app import auth
 from app.api.error_handling import register_api_errorhandlers
+from app.extensions import db, migrate, jwt
+
 
 def create_app():
     app = Flask(__name__)
@@ -13,10 +15,14 @@ def create_app():
 
     return app
 
+
 def configure_extensions(app):
     db.init_app(app)
+    jwt.init_app(app)
     migrate.init_app(app, db)
+    
 
 def register_blueprints(app):
     register_api_errorhandlers(api.views.blueprint)
     app.register_blueprint(api.views.blueprint)
+    app.register_blueprint(auth.views.blueprint)
