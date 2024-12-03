@@ -1,31 +1,49 @@
-import os
+from flask import request
 
-from flask import request, jsonify
-from dotenv import load_dotenv
-
-from app.commons. base_resources import BaseListResource, BaseObjectResource
+from app.commons.base_resources import BaseListResource, BaseObjectResource
 from app.models.user import User
-from app.models.role import Role
-from app.api.schemas.user import UserSchema
-from app.extensions import db
+from app.api.schemas.user import GetUserSchema, CreateUserSchema, UpdateUserSchema
+from app.auth.utils import user_roles_required
 
-
-load_dotenv()
-
-DEFAULT_ROLE_NAME = os.getenv('DEFAULT_ROLE')
 
 class UserObjectResource(BaseObjectResource):
     model = User
-    schema = UserSchema()
+
+    method_decorators = [user_roles_required('admin')]
+
+
+    def get(self, id):
+        self.schema = GetUserSchema()
+
+        return super().get(id)
+    
+    def put(self, id):
+        self.schema = UpdateUserSchema()
+
+        return super().put(id)
+    
+    def delete(self, id):
+        self.schema = GetUserSchema()
+        return super().delete(id)
 
 
 class UserListResource(BaseListResource):
     model = User
-    schema = UserSchema()
+
+    method_decorators = [user_roles_required('admin')]
+
+
+    def get(self):
+        self.schema = GetUserSchema(many=True)
+
+        return super().get()
+
 
     def post(self):
-        req = request.json
-        req['roles'] = [DEFAULT_ROLE_NAME]
+        self.schema = CreateUserSchema()
+
+        request_data = request.json
+        request_data['roles'] = ['user']
 
         return super().post()
     
