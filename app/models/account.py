@@ -6,8 +6,8 @@ class Account(db.Model):
 
     id = db.Column(db.Integer, primary_key = True)
     balance = db.Column(db.Integer)
-    client_id = db.Column(db.Integer, db.ForeignKey('clients.id'))
-    bank_id = db.Column(db.Integer, db.ForeignKey('banks.id'))
+    client_id = db.Column(db.Integer, db.ForeignKey('clients.id', ondelete='CASCADE'))
+    bank_id = db.Column(db.Integer, db.ForeignKey('banks.id', ondelete='CASCADE'))
 
     cards = db.relationship('Card', backref='account', lazy = True)
 

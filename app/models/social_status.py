@@ -5,7 +5,7 @@ class SocialStatus(db.Model):
     __tablename__ = 'social_statuses'
 
     id = db.Column(db.Integer, primary_key=True) 
-    name = db.Column(db.String(20))
+    name = db.Column(db.String(20), unique = True)
 
     clients = db.relationship('Client', backref='social_status', lazy = True)
 
