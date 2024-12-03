@@ -32,7 +32,7 @@ def paginate(query, schema):
     )
     prev_ = url_for(
         request.endpoint,
-        page=page_obj.prev_num if page_obj.has_prev else page_obj.page,
+        page_number=page_obj.prev_num if page_obj.has_prev else page_obj.page,
         page_size=page_size,
         **request.view_args,
         **filter_params
