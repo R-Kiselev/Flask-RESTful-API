@@ -21,9 +21,11 @@ class User(db.Model):
         self.password = password
         self.roles.extend(roles)
 
+
     @hybrid_property
-    def password(self, value):
+    def password(self):
         return self._password
+
 
     @password.setter
     def password(self, value):
