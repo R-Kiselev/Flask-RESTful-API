@@ -11,6 +11,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     email = db.Column(db.String(50), nullable = False, unique = True)
     _password = db.Column("password", db.String(255), nullable = False)
+    is_blocked = db.Column(db.Boolean, default = False, unique = False)
 
     roles = relationship('Role', secondary = 'user_roles', back_populates = 'users', lazy = True)
 
