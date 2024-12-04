@@ -4,7 +4,7 @@ class Card(db.Model):
     __tablename__ = 'cards'
 
     id = db.Column(db.Integer, primary_key = True)
-    balance = db.Column(db.Integer)
+    balance = db.Column(db.Integer, nullable = False, default = 0)
     account_id = db.Column(db.Integer, db.ForeignKey('accounts.id', ondelete='CASCADE'))
 
     def __repr__(self):

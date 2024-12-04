@@ -5,7 +5,7 @@ class Account(db.Model):
     __tablename__ = 'accounts'
 
     id = db.Column(db.Integer, primary_key = True)
-    balance = db.Column(db.Integer)
+    balance = db.Column(db.Integer, nullable = False, default = 0)
     client_id = db.Column(db.Integer, db.ForeignKey('clients.id', ondelete='CASCADE'))
     bank_id = db.Column(db.Integer, db.ForeignKey('banks.id', ondelete='CASCADE'))
 
