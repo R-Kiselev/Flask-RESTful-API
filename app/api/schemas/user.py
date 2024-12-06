@@ -1,34 +1,45 @@
-from marshmallow import Schema, fields, post_dump, post_load
-from marshmallow import validates, ValidationError
-
+from marshmallow import Schema, fields, validates, ValidationError, post_load
 from app.models.role import Role
 from app.extensions import db
 
 
 class UserSchema(Schema):
     id = fields.Int(dump_only=True)
-    email = fields.Email(required=True)
-    password = fields.String(load_only=True, required=True)
+    email = fields.Email()
+    password = fields.String(load_only=True)
     roles = fields.List(fields.String())
+    is_blocked = fields.Bool()
 
     @validates("roles")
     def validate_roles(self, value):
+        """Checks if roles exist in database."""
         for role_name in value:
             role = db.session.query(Role).filter_by(name=role_name).first()
             if not role:
                 raise ValidationError(f"Role '{role_name}' does not exist.")
-    # Should read about it and write by my own!!!
-    @post_load
-    def convert_names_to_Roles(self, data, **kwargs):
-        """Converts role names to 'Role' objects after loading into the schema."""
-        role_names = data.get("roles", [])
-        data["roles"] = db.session.query(Role).filter(Role.name.in_(role_names)).all()
-        return data
 
-    @post_dump
-    def convert_Roles_to_names(self, data, **kwargs):
-        """Converts 'Role' objects into strings after serialization."""
-        roles = data.get("roles", [])
-        if isinstance(roles, list) and roles and isinstance(roles[0], Role):
-            data["roles"] = [role.name for role in roles]
-        return data
+
+    @post_load
+    def convert_names_to_roles(self, input_data, **kwargs):
+        """Converts role names from strings to objects so sqlalchemy model can show users.roles."""
+        if "roles" in input_data:
+            role_objects = Role.query.filter(Role.name.in_(input_data['roles'])).all()
+            input_data['roles'] = role_objects
+        return input_data
+    
+
+# the Meta class helps customize each schema for their purposes
+class GetUserSchema(UserSchema):
+    class Meta:
+        exclude = ("password",)
+
+
+class CreateUserSchema(UserSchema):
+    class Meta:
+        load_only = ("password",)
+        dump_only = ("is_blocked",)
+
+
+class UpdateUserSchema(UserSchema):
+    class Meta:
+        exclude = ("password",)     
