@@ -18,52 +18,52 @@ from app.api.schemas.user import GetUserSchema
 blueprint = Blueprint('auth', __name__, url_prefix='/auth')
 
 
-@blueprint.route('/register', methods = ['POST'])
+@blueprint.route('/register', methods=['POST'])
 def register():
     from app.api.resources.users import UserListResource
 
-    return UserListResource().post() 
+    return UserListResource().post()
 
 
-@blueprint.route('/login', methods = ['POST'])
+@blueprint.route('/login', methods=['POST'])
 def login():
     request_data = request.json
     email = request_data.get('email')
     password = request_data.get('password')
 
     if not email or not password:
-        return jsonify({'msg' : 'Missing required fields'}), 400
+        return jsonify({'msg': 'Missing required fields'}), 400
 
-    user = User.query.filter_by(email = email).first()
+    user = User.query.filter_by(email=email).first()
     if not user or not pwd_context.verify(password, user.password):
-        return jsonify({'msg' : 'Bad credentials'}), 400
-    
+        return jsonify({'msg': 'Bad credentials'}), 400
+
     if (user.is_blocked):
-        return jsonify({'err' : 'Access denied. You are blocked'}), 401
-    
+        return jsonify({'err': 'Access denied. You are blocked'}), 401
+
     access_token = create_access_token(identity=user.id)
 
-    return jsonify({'access_token' : access_token}), 200 
+    return jsonify({'access_token': access_token}), 200
 
 
-@blueprint.route('/whoami', methods = ['GET'])
+@blueprint.route('/whoami', methods=['GET'])
 @jwt_required()
 def whoami():
     current_user = get_current_user()
 
     token = get_jwt()
     claims = {
-        'client_id' : token.get('client_id'),
-        'account_ids' : token.get('account_ids')
+        'client_id': token.get('client_id'),
+        'account_ids': token.get('account_ids')
     }
 
     return {
-        'user' : GetUserSchema().dump(current_user),
-        'token_claims' : claims
+        'user': GetUserSchema().dump(current_user),
+        'token_claims': claims
     }, 200
 
 
-@blueprint.route('/admin_required', methods = ['GET'])
+@blueprint.route('/admin_required', methods=['GET'])
 @jwt_required()
 @user_roles_required('admin')
 def admin_required():

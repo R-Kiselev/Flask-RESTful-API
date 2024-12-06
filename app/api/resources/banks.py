@@ -16,6 +16,7 @@ class BankObjectRes(BaseObjectResource):
         'delete': [user_roles_required('admin', 'manager'), jwt_required()]
     }
 
+
 class BankListRes(BaseListResource):
     model = Bank
     schema = BankSchema()

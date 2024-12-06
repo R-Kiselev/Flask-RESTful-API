@@ -7,6 +7,7 @@ from app.api.schemas.branch import BranchSchema
 from app.commons.pagination import paginate
 from app.auth.utils import user_roles_required
 
+
 class BranchObjectRes(BaseObjectResource):
     model = Branch
     schema = BranchSchema()
@@ -26,14 +27,12 @@ class BranchListRes(BaseListResource):
         'post': [user_roles_required('admin', 'manager'), jwt_required()]
     }
 
-
-    def get(self, bank_id = None):
+    def get(self, bank_id=None):
         query = Branch.query.filter(Branch.bank_id == bank_id)
         return paginate(query, self.schema)
-    
 
-    def post(self, bank_id = None):
+    def post(self, bank_id=None):
         req = request.json
         req['bank_id'] = bank_id
-        
+
         return super().post()

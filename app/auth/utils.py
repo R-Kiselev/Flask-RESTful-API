@@ -23,17 +23,17 @@ def load_client_and_accounts_id(user_identity):
     claims['user_id'] = user_identity
 
     client_id = db.session.query(Client.id)\
-                .where(Client.user_id == user_identity)\
-                .scalar()
-    
+        .where(Client.user_id == user_identity)\
+        .scalar()
+
     if not client_id:
         claims['client_id'] = None
         claims['account_ids'] = []
         return claims
 
     accounts = db.session.query(Account)\
-                  .where(Account.client_id == client_id)\
-                  .all()
+        .where(Account.client_id == client_id)\
+        .all()
     account_ids = [account.id for account in accounts]
 
     claims['client_id'] = client_id
@@ -47,10 +47,10 @@ def user_roles_required(*required_roles):
         @wraps(func)
         def wrapper(*args, **kwargs):
             current_user = get_current_user()
-            
+
             if not any(role.name in required_roles for role in current_user.roles):
                 return make_response(jsonify({'error': 'Access denied'}), 403)
-            
+
             return func(*args, **kwargs)
         return wrapper
     return decorator

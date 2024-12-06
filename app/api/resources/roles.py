@@ -12,6 +12,7 @@ class RoleObjectRes(BaseObjectResource):
 
     method_decorators = [user_roles_required('admin'), jwt_required()]
 
+
 class RoleListRes(BaseListResource):
     model = Role
     schema = RoleSchema()

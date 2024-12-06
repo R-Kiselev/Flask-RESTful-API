@@ -27,7 +27,7 @@ def configure_extensions(app):
     db.init_app(app)
     jwt.init_app(app)
     migrate.init_app(app, db)
-    
+
 
 def register_blueprints(app):
     app.register_blueprint(api.views.blueprint)

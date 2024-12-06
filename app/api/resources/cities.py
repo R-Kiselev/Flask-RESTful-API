@@ -16,6 +16,7 @@ class CityObjectRes(BaseObjectResource):
         'delete': [user_roles_required('admin', 'manager'), jwt_required()]
     }
 
+
 class CityListRes(BaseListResource):
     model = City
     schema = CitySchema()

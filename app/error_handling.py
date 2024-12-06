@@ -1,9 +1,12 @@
 import logging
+
 from flask import jsonify
-from app.extensions import db
 from marshmallow import ValidationError
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from werkzeug.exceptions import HTTPException
+
+from app.extensions import db
+
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
@@ -12,9 +15,11 @@ formatter = logging.Formatter("%(name)s %(asctime)s %(levelname)s %(message)s")
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
+
 def handle_validation_error(e):
     logger.error(f"Validation Error: {str(e)}")
     return jsonify({"error_type": "Validation Error", "error_message": e.messages}), 400
+
 
 def handle_database_integrity_error(e):
     db.session.rollback()
@@ -33,18 +38,22 @@ def handle_database_integrity_error(e):
             "additional_info": "Please check your data for constraints violations."
         }), 500
 
+
 def handle_database_error(e):
     db.session.rollback()
     logger.error(f"Database Error: {str(e)}")
     return jsonify({"error_type": "Database error", "error_message": str(e)}), 500
 
+
 def handle_http_exception(e):
     logger.error(f"HTTP Error: {str(e)}")
     return jsonify({"error_type": "Http error", "error_message": e.description}), e.code
 
+
 def handle_general_exception(e):
     logger.error(f"General Error: Type={type(e).__name__}, Message={str(e)}")
     return jsonify({"error_type": type(e).__name__, "error_message": str(e)}), 500
+
 
 def register_app_errorhandlers(app):
     """Return json errors.

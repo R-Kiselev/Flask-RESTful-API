@@ -18,7 +18,7 @@ def check_user_access(func):
         jwt = get_jwt()
         if kwargs.get('id') != jwt.get('client_id'):
             return {"error": "Access denied"}, 403
-        
+
         return func(*args, **kwargs)
     return wrapper
 
@@ -41,13 +41,12 @@ class ClientListRes(BaseListResource):
     schema = ClientSchema()
 
     method_decorators = {
-        'get' : [user_roles_required('admin'), jwt_required()],
-        'post' : [user_roles_required('admin', 'user'), jwt_required()]
+        'get': [user_roles_required('admin'), jwt_required()],
+        'post': [user_roles_required('admin', 'user'), jwt_required()]
     }
-
 
     def post(self):
         if get_jwt().get('user_id') != request.json.get('user_id'):
-            return {'err' : 'Access denied'}, 403
-        
+            return {'err': 'Access denied'}, 403
+
         return super().post()

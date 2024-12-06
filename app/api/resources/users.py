@@ -12,20 +12,19 @@ class UserObjectResource(BaseObjectResource):
 
     method_decorators = [user_roles_required('admin'), jwt_required()]
 
-
     def get(self, id):
         self.schema = GetUserSchema()
 
         return super().get(id)
-    
+
     def put(self, id):
         self.schema = UpdateUserSchema()
 
         return super().put(id)
-    
+
     def delete(self, id):
         self.schema = GetUserSchema()
-        
+
         return super().delete(id)
 
 
@@ -34,26 +33,22 @@ class UserListResource(BaseListResource):
 
     method_decorators = [user_roles_required('admin'), jwt_required()]
 
-
     def get(self):
         self.schema = GetUserSchema(many=True)
 
         return super().get()
 
-
     def post(self):
         self.schema = CreateUserSchema()
 
         request_data = request.json
-        
+
         user_data = self.schema.dump(request_data)
-        if User.query.filter_by(email = user_data.get('email')).first() :
+        if User.query.filter_by(email=user_data.get('email')).first():
             return {
-                'err' : 'User already exists'
+                'err': 'User already exists'
             }, 409
 
         request_data['roles'] = ['user']
 
-
         return super().post()
-    

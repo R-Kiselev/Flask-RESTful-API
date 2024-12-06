@@ -18,12 +18,13 @@ def check_user_access(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         jwt = get_jwt()
-        card = db.session.query(Card).where(Card.id == kwargs.get('id')).first()
+        card = db.session.query(Card).where(
+            Card.id == kwargs.get('id')).first()
         if not card:
             return {"error": "Card not found"}, 404
         if card.account_id not in jwt.get('account_ids'):
             return {"error": "Access denied"}, 403
-        
+
         return func(*args, **kwargs)
     return wrapper
 
@@ -35,7 +36,7 @@ class CardObjectRes(BaseObjectResource):
     # Order of decorators is important.
     # The first decorator called is the last one in the list
     method_decorators = [
-        check_user_access,  
+        check_user_access,
         user_roles_required('admin', 'user'),
         jwt_required()
     ]
@@ -50,17 +51,17 @@ class AccountCardListRes(BaseListResource):
         'post': [user_roles_required('admin', 'user'), jwt_required()]
     }
 
-    def get(self, account_id = None):
+    def get(self, account_id=None):
         query = Card.query.filter(Card.account_id == account_id)
 
         return paginate(query, self.schema)
-    
-    def post(self, account_id = None):
+
+    def post(self, account_id=None):
         jwt = get_jwt()
 
         if account_id not in jwt.get('account_ids'):
             return {"error": "Access denied"}, 403
-               
+
         req = request.json
         req['account_id'] = account_id
 

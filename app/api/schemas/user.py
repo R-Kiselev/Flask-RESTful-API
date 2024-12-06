@@ -1,4 +1,5 @@
 from marshmallow import Schema, fields, validates, ValidationError, post_load
+
 from app.models.role import Role
 from app.extensions import db
 
@@ -18,15 +19,15 @@ class UserSchema(Schema):
             if not role:
                 raise ValidationError(f"Role '{role_name}' does not exist.")
 
-
     @post_load
     def convert_names_to_roles(self, input_data, **kwargs):
         """Converts role names from strings to objects so sqlalchemy model can show users.roles."""
         if "roles" in input_data:
-            role_objects = Role.query.filter(Role.name.in_(input_data['roles'])).all()
+            role_objects = Role.query.filter(
+                Role.name.in_(input_data['roles'])).all()
             input_data['roles'] = role_objects
         return input_data
-    
+
 
 # the Meta class helps customize each schema for their purposes
 class GetUserSchema(UserSchema):
@@ -42,4 +43,4 @@ class CreateUserSchema(UserSchema):
 
 class UpdateUserSchema(UserSchema):
     class Meta:
-        exclude = ("password",)     
+        exclude = ("password",)

@@ -1,6 +1,8 @@
 from marshmallow import Schema, fields
 from marshmallow import validates
+
 from app.commons.validation_utils import validate_name
+
 
 class BankSchema(Schema):
     id = fields.Int(dump_only=True)
