@@ -13,12 +13,18 @@ from app.models.account import Account
 
 @jwt.user_lookup_loader
 def user_lookup_callback(_jwt_header, jwt_payload):
+    '''Get user object from database.
+    This function is called when a get_current_user() function is called.
+    '''
     identity = jwt_payload["sub"]
     return User.query.get(identity)
 
 
 @jwt.additional_claims_loader
 def load_client_and_accounts_id(user_identity):
+    '''Callback function to add custom claims to the JWT token.
+    This function is called when a create_access_token() function is called.
+    '''
     claims = {}
     claims['user_id'] = user_identity
 
@@ -43,6 +49,9 @@ def load_client_and_accounts_id(user_identity):
 
 
 def user_roles_required(*required_roles):
+    '''Decorator to check if user has required roles.
+    This function checks if the current user has any of the required roles passed as arguments.
+    '''
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):

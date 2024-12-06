@@ -20,6 +20,7 @@ blueprint = Blueprint('auth', __name__, url_prefix='/auth')
 
 @blueprint.route('/register', methods=['POST'])
 def register():
+    '''Create a new user with default role 'user'.''' 
     from app.api.resources.users import UserListResource
 
     return UserListResource().post()
@@ -49,6 +50,7 @@ def login():
 @blueprint.route('/whoami', methods=['GET'])
 @jwt_required()
 def whoami():
+    '''Get current user and jwt payload info.'''
     current_user = get_current_user()
 
     token = get_jwt()
@@ -67,5 +69,5 @@ def whoami():
 @jwt_required()
 @user_roles_required('admin')
 def admin_required():
-    current_user = get_current_user()
-    return GetUserSchema().dump(current_user), 200
+    '''Only admin can access this route.'''
+    return whoami()
