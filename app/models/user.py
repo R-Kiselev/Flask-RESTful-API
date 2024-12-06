@@ -3,7 +3,7 @@ from sqlalchemy.orm import relationship
 
 from app.extensions import db, pwd_context
 from .user_role import UserRole 
-
+from .client import Client
 
 class User(db.Model):
     __tablename__ = 'users'
@@ -14,7 +14,7 @@ class User(db.Model):
     is_blocked = db.Column(db.Boolean, default = False, unique = False)
 
     roles = relationship('Role', secondary = 'user_roles', back_populates = 'users', lazy = True)
-
+    client = relationship('Client', backref='client', lazy = True)
 
     def __init__(self, email, password, roles, **kwargs):
         super().__init__(**kwargs)

@@ -7,6 +7,7 @@ class Client(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(20))   
     social_status_id = db.Column(db.Integer, db.ForeignKey('social_statuses.id', ondelete='CASCADE'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete = 'CASCADE'), unique = True)
 
     accounts = db.relationship('Account', backref='client', lazy = True)
 
