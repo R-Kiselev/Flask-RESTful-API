@@ -1,7 +1,7 @@
 from functools import wraps
 
 from flask_restful import request
-from flask_jwt_extended import jwt_required, get_current_user, get_jwt
+from flask_jwt_extended import jwt_required, get_jwt
 
 from app.commons.base_resources import BaseObjectResource, BaseListResource
 from app.models.card import Card
