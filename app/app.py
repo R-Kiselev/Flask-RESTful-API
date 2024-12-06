@@ -2,6 +2,7 @@ from flask import Flask
 
 from app import api
 from app import auth
+from app import flask_cli
 from app.error_handling import register_app_errorhandlers
 from app.extensions import db, migrate, jwt
 
@@ -10,11 +11,16 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object("app.config")
 
+    configure_cli(app)
     configure_extensions(app)
     register_app_errorhandlers(app)
     register_blueprints(app)
 
     return app
+
+
+def configure_cli(app):
+    app.cli.add_command(flask_cli.init)
 
 
 def configure_extensions(app):
