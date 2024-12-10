@@ -12,7 +12,8 @@ class SocialStatusObjectRes(BaseObjectResource):
 
     method_decorators = {
         'get': [user_roles_required('admin', 'manager', 'user'), jwt_required()],
-        'all': [user_roles_required('admin', 'manager'), jwt_required()],
+        'put': [user_roles_required('admin', 'manager'), jwt_required()],
+        'delete': [user_roles_required('admin', 'manager'), jwt_required()],
     }
 
 
