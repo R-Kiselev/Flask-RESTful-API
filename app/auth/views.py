@@ -10,22 +10,23 @@ from flask_jwt_extended import (
     get_jwt
 )
 
-from app.extensions import jwt, pwd_context
+from app.extensions import pwd_context
 from app.models.user import User
 from app.auth.utils import user_roles_required
-from app.api.schemas.user import GetUserSchema
+from app.api.schemas.user import UserSchema
+
 
 blueprint = Blueprint('auth', __name__, url_prefix='/auth')
 
 
 @blueprint.route('/register', methods=['POST'])
 def register():
-    '''Create a new user with default role 'user'.''' 
+    '''Create a new user with default role 'user'.'''
     from app.api.resources.users import UserListResource
 
     request_data = request.json
     request_data['roles'] = ['user']
-    
+
     return UserListResource().post()
 
 
@@ -63,7 +64,7 @@ def whoami():
     }
 
     return {
-        'user': GetUserSchema().dump(current_user),
+        'user': UserSchema().dump(current_user),
         'token_claims': claims
     }, 200
 
