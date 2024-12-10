@@ -23,6 +23,9 @@ def register():
     '''Create a new user with default role 'user'.''' 
     from app.api.resources.users import UserListResource
 
+    request_data = request.json
+    request_data['roles'] = ['user']
+    
     return UserListResource().post()
 
 
