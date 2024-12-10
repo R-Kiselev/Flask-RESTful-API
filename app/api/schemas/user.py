@@ -6,9 +6,9 @@ from app.extensions import db
 
 class UserSchema(Schema):
     id = fields.Int(dump_only=True)
-    email = fields.Email()
-    password = fields.String(load_only=True)
-    roles = fields.List(fields.String())
+    email = fields.Email(required=True)
+    password = fields.String(load_only=True, required=True)
+    roles = fields.List(fields.String(), required=True)
     is_blocked = fields.Bool()
 
     @validates("roles")
@@ -21,7 +21,8 @@ class UserSchema(Schema):
 
     @post_load
     def convert_names_to_roles(self, input_data, **kwargs):
-        """Converts role names from strings to objects so sqlalchemy model can show users.roles."""
+        """Converts role names from strings to objects so sqlalchemy model can show users.roles.
+        This function is called when loading data from json to python object."""
         if "roles" in input_data:
             role_objects = Role.query.filter(
                 Role.name.in_(input_data['roles'])).all()
