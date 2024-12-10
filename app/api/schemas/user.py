@@ -31,17 +31,6 @@ class UserSchema(Schema):
 
 
 # the Meta class helps customize each schema for their purposes
-class GetUserSchema(UserSchema):
-    class Meta:
-        exclude = ("password",)
-
-
 class CreateUserSchema(UserSchema):
     class Meta:
-        load_only = ("password",)
         dump_only = ("is_blocked",)
-
-
-class UpdateUserSchema(UserSchema):
-    class Meta:
-        exclude = ("password",)
