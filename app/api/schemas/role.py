@@ -1,10 +1,9 @@
-from marshmallow import Schema, fields
-from marshmallow import validates, ValidationError
+from marshmallow import Schema, fields, validates
 
 from app.commons.validation_utils import validate_name
 
 
-class CitySchema(Schema):
+class RoleSchema(Schema):
     id = fields.Int(dump_only=True)
     name = fields.Str(required=True)
 
