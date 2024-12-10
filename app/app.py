@@ -11,8 +11,8 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object("app.config")
 
-    configure_cli(app)
     configure_extensions(app)
+    configure_cli(app)
     register_app_errorhandlers(app)
     register_blueprints(app)
 
