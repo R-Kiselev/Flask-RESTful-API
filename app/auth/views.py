@@ -56,8 +56,8 @@ def login():
 def whoami():
     '''Get current user and jwt payload info.'''
     current_user = get_current_user()
-
     token = get_jwt()
+
     claims = {
         'client_id': token.get('client_id'),
         'account_ids': token.get('account_ids')
