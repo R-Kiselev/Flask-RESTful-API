@@ -10,13 +10,16 @@ from app.commons.pagination import paginate
 from app.auth.utils import user_roles_required
 
 
+ACCESS_DENIED_MESSAGE = "Access denied"
+
+
 def check_user_access(func):
     @wraps
     def wrapper(*args, **kwargs):
         jwt = get_jwt()
         account_ids = jwt.get('account_ids')
         if kwargs.get('id') not in account_ids:
-            return {'err': 'Access denied'}, 403
+            return {'err': ACCESS_DENIED_MESSAGE}, 403
 
         return func(*args, **kwargs)
     return wrapper
@@ -53,7 +56,7 @@ class BankAccountListRes(BaseListResource):
         req_client_id = req.get('client_id')
 
         if jwt_client_id != req_client_id:
-            return {'err': 'Access denied'}, 403
+            return {'err': ACCESS_DENIED_MESSAGE}, 403
 
         req['bank_id'] = bank_id
         return super().post()
@@ -77,7 +80,7 @@ class ClientAccountListRes(BaseListResource):
         jwt_client_id = jwt.get('client_id')
 
         if jwt_client_id != client_id:
-            return {'err': 'Access denied'}, 403
+            return {'err': ACCESS_DENIED_MESSAGE}, 403
 
         req = request.json
         req['client_id'] = client_id
