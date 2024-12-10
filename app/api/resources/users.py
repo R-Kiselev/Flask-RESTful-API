@@ -41,14 +41,12 @@ class UserListResource(BaseListResource):
     def post(self):
         self.schema = CreateUserSchema()
 
-        request_data = request.json
-
-        user_data = self.schema.dump(request_data)
-        if User.query.filter_by(email=user_data.get('email')).first():
+        user_data = self.schema.dump(request.json)
+       
+        user = User.query.filter_by(email=user_data.get('email')).first()
+        if user:
             return {
                 'err': 'User already exists'
             }, 409
-
-        request_data['roles'] = ['user']
 
         return super().post()
