@@ -1,9 +1,8 @@
-from functools import wraps
-
 from flask_restful import request
 from flask_jwt_extended import jwt_required, get_jwt
 
 from app.commons.base_resources import BaseObjectResource, BaseListResource
+from app.commons.constants import ACCESS_DENIED_ERROR
 from app.models.card import Card
 from app.api.schemas.card import CardSchema
 from app.extensions import db
@@ -11,35 +10,38 @@ from app.commons.pagination import paginate
 from app.auth.utils import user_roles_required
 
 
-def check_user_access(func):
-    """Check if the user has access to the card
-    If card account_id is not in the jwt claim 'account_ids', return 403
-    """
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        jwt = get_jwt()
-        card = db.session.query(Card).where(
-            Card.id == kwargs.get('id')).first()
-        if not card:
-            return {"error": "Card not found"}, 404
-        if card.account_id not in jwt.get('account_ids'):
-            return {"error": "Access denied"}, 403
-
-        return func(*args, **kwargs)
-    return wrapper
-
-
 class CardObjectRes(BaseObjectResource):
     model = Card
     schema = CardSchema()
 
-    # Order of decorators is important.
-    # The first decorator called is the last one in the list
-    method_decorators = [
-        check_user_access,
-        user_roles_required('admin', 'user'),
-        jwt_required()
-    ]
+    method_decorators = [user_roles_required('admin', 'user'), jwt_required()]
+
+    def get(self, id):
+        jwt = get_jwt()
+
+        card = db.session.query(Card).where(Card.id == id).first()
+        if not card or card.account_id not in jwt.get('account_ids'):
+            return ACCESS_DENIED_ERROR
+
+        return super().get(id)
+
+    def put(self, id):
+        jwt = get_jwt()
+
+        card = db.session.query(Card).where(Card.id == id).first()
+        if not card or card.account_id not in jwt.get('account_ids'):
+            return ACCESS_DENIED_ERROR
+
+        return super().put(id)
+
+    def delete(self, id):
+        jwt = get_jwt()
+
+        card = db.session.query(Card).where(Card.id == id).first()
+        if not card or card.account_id not in jwt.get('account_ids'):
+            return ACCESS_DENIED_ERROR
+
+        return super().delete(id)
 
 
 class AccountCardListRes(BaseListResource):
@@ -60,7 +62,7 @@ class AccountCardListRes(BaseListResource):
         jwt = get_jwt()
 
         if account_id not in jwt.get('account_ids'):
-            return {"error": "Access denied"}, 403
+            return ACCESS_DENIED_ERROR
 
         req = request.json
         req['account_id'] = account_id
