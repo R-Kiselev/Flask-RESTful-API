@@ -1,4 +1,4 @@
-from flask import url_for, request
+from flask import url_for, request, jsonify
 
 DEFAULT_PAGE_NUMBER = 1
 DEFAULT_PAGE_SIZE = 5
@@ -42,10 +42,10 @@ def paginate(query, schema):
         **filter_params
     )
 
-    return {
+    return jsonify({
         'total': page_obj.total,
         'pages': page_obj.pages,
         'next': next_,
         'prev': prev_,
         'results': schema.dump(page_obj.items, many=True)
-    }, 200
+    }), 200
