@@ -1,3 +1,4 @@
+import os
 import logging
 
 from flask import jsonify
@@ -7,6 +8,7 @@ from werkzeug.exceptions import HTTPException
 
 from app.extensions import db
 
+ENV = os.getenv('FLASK_ENV', 'production').lower()
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
@@ -25,18 +27,17 @@ def handle_database_integrity_error(e):
     db.session.rollback()
     logger.error(f"Database Integrity Error: {str(e)}")
 
-    if "Duplicate" in str(e):
-        error_message = "An item already exists."
-        return jsonify({
-            "error_type": "Database integrity error",
-            "error_message": error_message,
-        }), 409
+    if ENV == 'development':
+        error_message = str(e) 
+    elif "Duplicate" in str(e):
+        error_message = "An item with the same value already exists."
     else:
-        return jsonify({
-            "error_type": "Database integrity error",
-            "error_message": str(e),
-            "additional_info": "Please check your data for constraints violations."
-        }), 500
+        error_message = "Input data is invalid. Please check the input data." 
+
+    return jsonify({
+        "error_type": "Database Integrity error",
+        "error_message": error_message
+    }), 409 if "Duplicate" in str(e) else 500
 
 
 def handle_database_error(e):
