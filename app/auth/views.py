@@ -44,6 +44,9 @@ def login():
 
     access_token = create_access_token(identity=user.id)
 
+    user.update_login_time()
+    db.session.commit()
+
     return jsonify({'access_token': access_token}), 200
 
 
