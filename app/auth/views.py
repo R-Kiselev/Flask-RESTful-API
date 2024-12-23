@@ -59,10 +59,10 @@ def whoami():
         'account_ids': token.get('account_ids'),
     }
 
-    return {
+    return jsonify({
         'user': UserSchema().dump(current_user),
         'token_claims': claims
-    }, 200
+    }), 200
 
 
 @blueprint.route('/admin_required', methods=['GET'])
