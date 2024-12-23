@@ -10,14 +10,9 @@ class UserSchema(Schema):
     password = fields.String(load_only=True, required=True)
     roles = fields.List(fields.String(), required=True)
     is_blocked = fields.Bool()
-
-    @validates("roles")
-    def validate_roles(self, value):
-        """Checks if roles exist in database."""
-        for role_name in value:
-            role = db.session.query(Role).filter_by(name=role_name).first()
-            if not role:
-                raise ValidationError(f"Role '{role_name}' does not exist.")
+    registered_on = fields.DateTime(dump_only=True)
+    blocked_on = fields.DateTime(dump_only=True)
+    last_login_date = fields.DateTime(dump_only=True)
 
     @post_load
     def convert_names_to_roles(self, input_data, **kwargs):
