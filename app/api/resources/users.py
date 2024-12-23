@@ -1,10 +1,12 @@
-from flask import request
+from flask import request, jsonify
 from flask_jwt_extended import jwt_required
 
 from app.commons.base_resources import BaseListResource, BaseObjectResource
 from app.models.user import User
 from app.api.schemas.user import UserSchema, CreateUserSchema
 from app.auth.utils import user_roles_required
+from app.models.role import Role
+from app.models.user import User
 
 
 class UserObjectResource(BaseObjectResource):
@@ -12,6 +14,12 @@ class UserObjectResource(BaseObjectResource):
     schema = UserSchema()
 
     method_decorators = [user_roles_required('admin'), jwt_required()]
+
+
+def get_invalid_roles(user_roles):
+    existing_roles = {role.name for role in Role.query.all()}
+    invalid_roles = user_roles - existing_roles
+    return invalid_roles
 
 
 class UserListResource(BaseListResource):
@@ -31,8 +39,14 @@ class UserListResource(BaseListResource):
 
         user = User.query.filter_by(email=user_data.get('email')).first()
         if user:
-            return {
+            return jsonify({
                 'err': 'User already exists'
-            }, 409
+            }), 409
+
+        invalid_roles = get_invalid_roles(set(user_data.get('roles', [])))
+        if invalid_roles:
+            return jsonify({
+                'err': f"Roles {invalid_roles} do not exist"
+            }), 400
 
         return super().post()
