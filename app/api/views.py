@@ -1,8 +1,7 @@
-from flask import Blueprint, jsonify
-from flask_restful import Api, abort
-from marshmallow import ValidationError
+from flask import Blueprint
+from flask_restful import Api
 
-from app.api.resources.accounts import AccountObjectRes, BankAccountListRes, ClientAccountListRes
+from app.api.resources.accounts import AccountObjectRes, AccountListRes, ClientAccountListRes
 from app.api.resources.roles import RoleObjectRes, RoleListRes
 from app.api.resources.users import UserObjectResource, UserListResource
 from app.api.resources.cards import CardObjectRes, AccountCardListRes
@@ -36,7 +35,7 @@ api.add_resource(BranchListRes, '/banks/<int:bank_id>/branches')
 api.add_resource(BranchObjectRes, '/branches/<int:id>')
 
 # Accounts
-api.add_resource(BankAccountListRes, '/banks/<int:bank_id>/accounts')
+api.add_resource(AccountListRes, '/banks/<int:bank_id>/accounts')
 api.add_resource(ClientAccountListRes, '/clients/<int:client_id>/accounts')
 api.add_resource(AccountObjectRes, '/accounts/<int:id>')
 
@@ -51,5 +50,5 @@ api.add_resource(UserObjectResource, '/users/<int:id>')
 
 
 # Roles
-api.add_resource(RoleListRes, '/users/roles')
-api.add_resource(RoleObjectRes, '/users/roles/<int:id>')
+api.add_resource(RoleListRes, '/roles')
+api.add_resource(RoleObjectRes, '/roles/<int:id>')
