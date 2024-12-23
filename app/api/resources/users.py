@@ -15,6 +15,17 @@ class UserObjectResource(BaseObjectResource):
 
     method_decorators = [user_roles_required('admin'), jwt_required()]
 
+    def put(self, id):
+        user = User.query.get_or_404(id)
+        user_data = self.schema.load(request.json)
+
+        if user_data.get('is_blocked') and not user.is_blocked:
+            user.block()
+        elif not user_data.get('is_blocked') and user.is_blocked:
+            user.unblock()
+
+        return super().put(id)
+
 
 def get_invalid_roles(user_roles):
     existing_roles = {role.name for role in Role.query.all()}
