@@ -14,7 +14,7 @@ from app.extensions import pwd_context
 from app.models.user import User
 from app.auth.utils import user_roles_required
 from app.api.schemas.user import UserSchema
-
+from app.extensions import db
 
 blueprint = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -33,14 +33,10 @@ def register():
 @blueprint.route('/login', methods=['POST'])
 def login():
     request_data = request.json
-    email = request_data.get('email')
-    password = request_data.get('password')
+    credentials = UserSchema(only = ['email', 'password']).load(request_data)
 
-    if not email or not password:
-        return jsonify({'msg': 'Missing required fields'}), 400
-
-    user = User.query.filter_by(email=email).first()
-    if not user or not pwd_context.verify(password, user.password):
+    user = User.query.filter_by(email=credentials.get('email')).first()
+    if not user or not pwd_context.verify(credentials.get('password'), user.password):
         return jsonify({'msg': 'Bad credentials'}), 400
 
     if (user.is_blocked):
@@ -60,7 +56,7 @@ def whoami():
 
     claims = {
         'client_id': token.get('client_id'),
-        'account_ids': token.get('account_ids')
+        'account_ids': token.get('account_ids'),
     }
 
     return {
