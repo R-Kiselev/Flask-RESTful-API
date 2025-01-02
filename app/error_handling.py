@@ -28,16 +28,22 @@ def handle_database_integrity_error(e):
     logger.error(f"Database Integrity Error: {str(e)}")
 
     if ENV == 'development':
-        error_message = str(e) 
-    elif "Duplicate" in str(e):
-        error_message = "An item with the same value already exists."
+        return jsonify({
+            "error_type": "Database Integrity error",
+            "error_message": str(e)
+        }), 500
+
+    if "Duplicate" in str(e):
+        error_message = "A conflict occurred. The data you provided already exists."
+        status_code = 409
     else:
-        error_message = "Input data is invalid. Please check the input data." 
+        error_message = "Please verify your input and try again."
+        status_code = 400
 
     return jsonify({
-        "error_type": "Database Integrity error",
+        "error_type": "Data error",
         "error_message": error_message
-    }), 409 if "Duplicate" in str(e) else 500
+    }), status_code
 
 
 def handle_database_error(e):
