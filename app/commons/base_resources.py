@@ -20,10 +20,10 @@ class BaseObjectResource(Resource):
             setattr(item, key, value)
 
         db.session.commit()
-        return jsonify({
+        return {
             "msg": "item updated",
             "item": self.schema.dump(item)
-        }), 200
+        }, 200
            
     def delete(self, id=None):
         item = self.model.query.get_or_404(id, description=f'The {self.model.__name__.lower()} with id = {id} does not exist')
@@ -31,10 +31,10 @@ class BaseObjectResource(Resource):
         db.session.delete(item)
         db.session.commit()
 
-        return jsonify({
+        return {
             "msg" : "item deleted",
             "item" : self.schema.dump(item)
-        }), 200
+        }, 200
     
 class BaseListResource(Resource):
     model = None
@@ -51,7 +51,7 @@ class BaseListResource(Resource):
         db.session.add(item)
         db.session.commit()
 
-        return jsonify({
+        return {
             "msg" : "item created",
             "item" : self.schema.dump(item)
-        }), 201
+        }, 201
