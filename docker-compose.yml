@@ -1,0 +1,32 @@
+services:
+  db:
+    image: mysql:9
+    restart: always
+    healthcheck:
+      test: ['CMD-SHELL', 'mysqladmin ping -h 127.0.0.1 --password=$$MYSQL_ROOT_PASSWORD --silent']
+      interval: 3s
+      retries: 5
+      start_period: 30s
+    volumes:
+      - db-data:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=mybank
+      - MYSQL_USER=user 
+      - MYSQL_PASSWORD=password
+      - MYSQL_ROOT_PASSWORD=rootpass
+    expose:
+      - 3306
+      - 33060
+
+  backend:
+    build: .
+    restart: always
+    ports:
+      - '8000:5000'
+    entrypoint: /app/entrypoint.sh
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  db-data:
