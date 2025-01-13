@@ -1,5 +1,6 @@
-from marshmallow import ValidationError
 import re
+
+from marshmallow import ValidationError
 
 def validate_balance(value):
     if value < 0:
