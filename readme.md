@@ -7,7 +7,7 @@ Inspired by the structure and some solutions from the [cookiecutter-flask-restfu
 
 * Simple flask application using application factory, blueprints
 * Simple pagination utils
-* Simple cli implementation with basics commands (init)
+* Simple cli implementation with basics commands (init, run, etc.)
 * [Flask Migrate](https://flask-migrate.readthedocs.io/en/latest/) included in entry point
 * RBAC using [Flask-JWT-Extended](http://flask-jwt-extended.readthedocs.io/en/latest/) 
 * Configuration using environment variables
@@ -21,6 +21,16 @@ Inspired by the structure and some solutions from the [cookiecutter-flask-restfu
 * [Marshmallow](https://marshmallow.readthedocs.io/en/stable/index.html)
 * [Flask-JWT-Extended](http://flask-jwt-extended.readthedocs.io/en/latest/)
 * [dotenv](https://github.com/theskumar/python-dotenv)
+
+## Usage
+
+* [Project structure](#Project-structure)
+* [Installation](#Installation)
+* [Configuration](#Configuration)
+* [Authentication](#Authentication)
+* [Using docker-compose](#using-docker-compose)
+* [Makefile](#makefile-usage)
+* [CRUD operations examples](#CRUD-operations-examples)
 
 ## Project structure
     ```
@@ -52,6 +62,12 @@ Inspired by the structure and some solutions from the [cookiecutter-flask-restfu
     │   └── flask_cli.py
     ├── wsgi.py
     ├── requirements.txt
+    ├── Dockerfile
+    ├── docker-compose.yml
+    ├── .dockerignore
+    ├── Makefile
+    ├── entrypoint.sh
+    ├── requirements.txt
     └── .env
     ```
 
@@ -76,35 +92,47 @@ Inspired by the structure and some solutions from the [cookiecutter-flask-restfu
 - **wsgi.py** ── Entry point for running the Flask application.
 - **requirements.txt** ── Lists Python dependencies required for the project.
 - **.env** ── Stores environment variables for secure configuration.
+- **Dockerfile** ── Defines the application container image.
+- **docker-compose.yml** ── Manages the application container and its dependencies.
+- **Makefile** ── Automates repetitive tasks like starting the app.
+- **entrypoint.sh** ── Contains the entrypoint script for the Docker container.
 
 ## Installation
 
 ### Create project
 1. Clone repository.
 2. Create python venv
-3. pip install requirements.txt
-4. Init database on your computer.
+3. pip install -r requirements.txt
+4. Init MySQL database on your computer.
 5. Configure .env file
-6. Start server by running wsgi.py file or using command: "python wsgi.py"
 
-### Configuration
-Configuration is handled by environment variables, for development purpose you just
-need to update / add entries in `.env` file.
+## Configuration
+Configuration is handled by environment variables, for development purpose you just need to create and add entries in `.env` file.
 
-It's filled by default with following content:
-
+It should consist of the following variables:
 ```
+MYSQL_DATABASE = 'mybank'
+MYSQL_ROOT_PASSWORD = 'pass'
+SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:pass@db:3306/mybank'
+
 FLASK_ENV = 'development'
 FLASK_APP = 'app.app:create_app'
 FLASK_CERT = 'adhoc'
 SECRET_KEY = 'SECRET'
-SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:pass@localhost/mybank'
+JWT_SECRET_KEY = "JWT_SECRET"
 
 DEFAULT_ROLE = 'user'
 
 ADMIN_EMAIL = 'admin@gmail.com'
 ADMIN_PASS = 'password'
 ```
+
+You can configure database connection by setting `SQLALCHEMY_DATABASE_URI` in `.env` file.
+It is crucial to set the correct database URI to connect to your database.
+Escpecially when you are using docker-compose, you should set the host to `db` which is the name of the service in the docker-compose file.
+If you want to run the application on your local machine, you should set the host to `localhost`.
+
+`FLASK_ENV` is set to `development` by default. This automatically enables debug mode and changes errorhandlers behavior (look at `config.py`).
 
 ## Authentication
 
@@ -173,13 +201,63 @@ RESPONSE
 }
 ```
 
-## Usage
+## Using docker-compose
 
-Postman is used to work with the program.
-Query parameters are supported in CRUD operations.
-You can paginate data using **page_number**, **page_size** and filter data by table fields.
+You can use docker-compose to run the application in a containerized environment.
+Also, you can use the Makefile to automate repetitive tasks.
+At first, you need to initialize your environment by running the following commands. 
+This will create containers and initialize the database.
 
-### Bank resources
+With docker-compose
+```bash
+docker-compose build
+docker-compose up
+docker exec -it <backend_container_id> flask init
+docker exec -it <backend_container_id> flask db-init
+docker exec -it <backend_container_id> flask db-migrate
+docker exec -it <backend_container_id> flask db-upgrade
+```
+
+With docker-compose and the Makefile
+```bash
+make init
+```
+
+Now your project is ready to use.
+
+## Makefile usage
+
+Initizalize the environment
+```bash
+make init
+```
+
+Build the containers
+```bash
+make build
+```
+
+Run the containers
+```bash
+make run
+```
+
+Create migrations folder
+```bash
+make db-init
+```
+
+Create new database migration
+```bash
+make db-migrate
+```
+
+Apply database migrations
+```bash
+make db-upgrade
+```
+
+## CRUD operations examples
 
 If user don't have access to endpoint, he will receive 403 Forbidden status code.
 This can be caused by :
