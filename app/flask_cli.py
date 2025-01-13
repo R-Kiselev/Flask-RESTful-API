@@ -13,7 +13,7 @@ dotenv.load_dotenv()
 def create_roles():
     from app.models.role import Role
 
-    roles = ['admin', 'user']
+    roles = [os.getenv('DEFAULT_ROLE'), 'admin']
 
     click.echo('Creating roles')
     for role in roles:
