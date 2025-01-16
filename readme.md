@@ -160,9 +160,12 @@ RESPONSE
 201 CREATED
 {
     "item": {
+        "blocked_on": null,
         "email": "exampleuser@gmail.com",
-        "id": 62,
+        "id": 2,
         "is_blocked": false,
+        "last_login_date": null,
+        "registered_on": "2025-01-16T17:10:26",
         "roles": [
             "user"
         ]
@@ -212,10 +215,10 @@ With docker-compose
 ```bash
 docker-compose build
 docker-compose up
-docker exec -it <backend_container_id> flask init
 docker exec -it <backend_container_id> flask db-init
 docker exec -it <backend_container_id> flask db-migrate
 docker exec -it <backend_container_id> flask db-upgrade
+docker exec -it <backend_container_id> flask init
 ```
 
 With docker-compose and the Makefile
