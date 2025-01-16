@@ -1,7 +1,7 @@
 # Local development
 /migrations
 Makefile
-.properties
+*.properties
 *.md
 
 # Git
