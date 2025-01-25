@@ -42,10 +42,10 @@ def paginate(query, schema):
         **filter_params
     )
 
-    return jsonify({
+    return {
         'total': page_obj.total,
         'pages': page_obj.pages,
         'next': next_,
         'prev': prev_,
         'results': schema.dump(page_obj.items, many=True)
-    }), 200
+    }, 200
