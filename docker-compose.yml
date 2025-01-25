@@ -17,7 +17,9 @@ services:
       start_period: 30s
 
   backend:
-    build: .
+    build:
+      context: ./bank-service
+      dockerfile: Dockerfile
     container_name: backend
     restart: always
     ports:
@@ -27,7 +29,7 @@ services:
       db:
         condition: service_healthy
     env_file:
-      - .env  
+      - bank-service/.env  
 
 volumes:
   db-data:
