@@ -16,11 +16,11 @@ services:
       retries: 30
       start_period: 30s
 
-  backend:
+  bank-service:
     build:
       context: ./bank-service
       dockerfile: Dockerfile
-    container_name: backend
+    container_name: bank-service
     restart: always
     ports:
       - '5000:5000'
@@ -31,5 +31,27 @@ services:
     env_file:
       - bank-service/.env  
 
+  mongodb:
+    image: mongo:8.0-noble
+    container_name: mongodb
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongodb-data:/var/lib/mongodb
+
+  log-service:
+    build:
+      context: ./log-service
+      dockerfile: Dockerfile
+    container_name: log-service
+    restart: always
+    ports:
+      - '8000:8000'
+    entrypoint: ['bash', entrypoint.sh]
+    depends_on:
+      - bank-service
+      - mongodb
+      
 volumes:
   db-data:
+  mongodb-data:
