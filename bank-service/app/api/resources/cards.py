@@ -8,6 +8,7 @@ from app.api.schemas.card import CardSchema
 from app.extensions import db
 from app.commons.pagination import paginate
 from app.auth.utils import user_roles_required
+from app.message_queue import MessageQueue
 
 
 class CardObjectRes(BaseObjectResource):
@@ -64,7 +65,11 @@ class AccountCardListRes(BaseListResource):
         if account_id not in jwt.get('account_ids'):
             return ACCESS_DENIED_ERROR
 
-        req = request.json
-        req['account_id'] = account_id
+        req_body = request.json
+        req_body['account_id'] = account_id
 
-        return super().post()
+        response = super().post()
+
+        MessageQueue().send_message_to_queue(req_body, 'log-service')
+
+        return response
