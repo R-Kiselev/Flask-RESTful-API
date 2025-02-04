@@ -1,4 +1,4 @@
-.PHONY: init build run db-init db-migrate db-upgrade
+.PHONY: init build run restart db-init db-migrate db-upgrade
 
 init:  build run
 	docker-compose exec backend flask db init
@@ -12,6 +12,8 @@ build:
 
 run:
 	docker-compose up -d
+
+rebuild:  down build run
 
 down:
 	docker-compose down

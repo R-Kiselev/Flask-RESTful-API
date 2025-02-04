@@ -1,29 +1,29 @@
 from motor.motor_asyncio import AsyncIOMotorClient
-from .config import Config
-
+from .config import settings
+from .logging import logger
 
 async def connect_and_init_db():
     global db_client
     try:
-        mongodb_uri = Config.app_settings.get('MONGODB_URI')
+        mongodb_uri = str(settings.mongodb_dsn)
         db_client = AsyncIOMotorClient(mongodb_uri)
         
-        print('Connected to mongo.')
+        logger.info(f'Connected to mongo at {mongodb_uri}')
     except Exception as e:
-        print(f'Could not connect to mongo: {e}')
+        logger.error(f'Error connecting to mongo: {e}')
         raise
 
 
 async def get_db_client() -> AsyncIOMotorClient:
-    db_name = Config.app_settings.get('DB_NAME')
+    db_name = settings.mongodb_name
     return db_client[db_name]
 
 
 async def close_db_connection():
     global db_client
     if db_client is None:
-        print('Connection is None, nothing to close.')
+        logger.info('No connection to close.')
         return
     db_client.close()
     db_client = None
-    print('Mongo connection closed.')
+    logger.info('Connection closed.')
