@@ -31,11 +31,20 @@ services:
     env_file:
       - bank-service/.env  
 
-  rabbit:
-    image: rabbitmq:latest
+  rabbitmq:
+    image: rabbitmq:4.1-rc-management
     container_name: rabbitmq
     ports:
-        - "5672:5672"
+      - "15672:15672"
+      - "5672:5672"
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD-SHELL", "rabbitmq-diagnostics -q ping"]
+      interval: 30s
+      timeout: 30s
+      retries: 3
+
   mongodb:
     image: mongo:8.0-noble
     container_name: mongodb
@@ -43,20 +52,28 @@ services:
       - '27017:27017'
     volumes:
       - mongodb-data:/var/lib/mongodb
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
 
   log-service:
     build:
       context: ./log-service
       dockerfile: Dockerfile
     container_name: log-service
-    restart: always
+    restart: on-failure
     ports:
       - '8000:8000'
     entrypoint: ['bash', entrypoint.sh]
     depends_on:
-      - bank-service
-      - mongodb
+      mongodb:
+        condition: service_healthy
+      bank-service:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+      
       
 volumes:
   db-data:
   mongodb-data:
+  rabbitmq-data:
