@@ -8,7 +8,7 @@ class MessageQueue:
         port=5672
     )
 
-    def send_message_to_queue(self, message: str, queue: str):
+    def send_message_to_queue(self, message: dict, queue: str):
         with BlockingConnection(self.connection_params) as connection:
             with connection.channel() as channel:
                 message_json = json.dumps(message)
