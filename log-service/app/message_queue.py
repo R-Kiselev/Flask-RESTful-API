@@ -1,16 +1,27 @@
 import asyncio
-from typing import Optional, Callable
+import json
+from typing import Optional, Callable, Dict, Any
 from aio_pika import connect, Connection, Queue
 from aio_pika.abc import AbstractIncomingMessage
 from aio_pika.exceptions import AMQPError
 
 from .config import settings
 from .logging import logger
+from .db import get_db_client
+
 
 RABBITMQ_URL = str(settings.amqp_dsn)
 
 
-async def on_message(message: AbstractIncomingMessage) -> Optional[str]:
+async def save_message(log: Dict[str, Any]) -> None:
+    db = await get_db_client()
+    db_collection = settings.get_mongodb_collection('logs')
+
+    await db[db_collection].insert_one(log)
+    logger.info('Message saved to data storage')
+
+
+async def on_message(message: AbstractIncomingMessage) -> Optional[Dict[str, Any]]:
     try:
         decoded_message = message.body.decode()
         logger.info(f'Processed message content: {decoded_message}')
@@ -18,22 +29,24 @@ async def on_message(message: AbstractIncomingMessage) -> Optional[str]:
         await message.ack()
         logger.info('Message acknowledged')
 
-        return decoded_message
+        return json.loads(decoded_message)
     except Exception as e:
         logger.error(f'Error processing message: {e}')
-        message.nack(requeue=True)
+        await message.nack(requeue=True)
         logger.warning('Message nack with requeue')
 
         return None
 
 
-async def consume_queue(queue: Queue, on_message: Callable) -> None:
+async def save_queue_messages(queue: Queue, on_message: Callable) -> None:
     async with queue.iterator() as queue_iter:
         async for message in queue_iter:
             decoded_message = await on_message(message)
             if decoded_message is None:
                 continue
             logger.info(f'listener: {decoded_message}')
+
+            await save_message(decoded_message)
 
 
 async def listen() -> None:
@@ -46,10 +59,7 @@ async def listen() -> None:
                 queue = await channel.declare_queue('log-service', durable=True)
 
                 logger.info('Waiting for messages.')
-                await consume_queue(queue, on_message)
-
-                # await queue.consume(on_message, no_ack=False)
-                # await asyncio.Future()
+                await save_queue_messages(queue, on_message)
 
         except AMQPError as e:
             logger.error(f'RabbitMQ connection error: {e}')
@@ -61,6 +71,6 @@ async def listen() -> None:
             await asyncio.sleep(5)
 
 
-async def start_message_listener():
-    logger.info('Starting message listener in background...')
+async def start_messages_saver():
+    logger.info('Starting message saver in background...')
     asyncio.create_task(listen())
