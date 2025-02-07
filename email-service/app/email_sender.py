@@ -1,7 +1,6 @@
 from aiosmtplib import SMTP
 
 import ssl
-import asyncio
 
 from email.message import EmailMessage
 from .config import email_settings
