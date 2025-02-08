@@ -4,7 +4,7 @@ services:
     container_name: db
     restart: always
     ports:
-      - '3306:3306'
+      - '3307:3306'
     volumes:
       - db-data:/var/lib/mysql
     environment:
@@ -29,7 +29,7 @@ services:
       db:
         condition: service_healthy
     env_file:
-      - bank-service/.env  
+      - bank-service/.dockerenv  
 
   rabbitmq:
     image: rabbitmq:4.1-rc-management
@@ -71,6 +71,8 @@ services:
         condition: service_started
       rabbitmq:
         condition: service_healthy
+    env_file:
+      - log-service/.dockerenv  
       
       
 volumes:
