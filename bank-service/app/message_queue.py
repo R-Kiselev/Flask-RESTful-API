@@ -1,11 +1,13 @@
 import json
 from pika import BlockingConnection, ConnectionParameters
 
+from .config import RABBITMQ_HOST, RABBITMQ_PORT
+
 
 class MessageQueue:
     connection_params = ConnectionParameters(
-        host='rabbitmq',
-        port=5672
+        host=RABBITMQ_HOST,
+        port=RABBITMQ_PORT
     )
 
     def send_message_to_queue(self, message: dict, queue: str):
