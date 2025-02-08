@@ -19,9 +19,7 @@ class Settings(BaseSettings):
         'MONGODB_URI', 'mongodb://mongodb:27017'
     )
     mongodb_name: str = os.getenv('MONGODB_NAME', 'log-service')
-    mongodb_collections: set[str] = set(
-        os.getenv('MONGODB_COLLECTIONS', 'logs').split(',')
-    )
+    mongodb_collections: str = os.getenv('MONGODB_COLLECTIONS', 'logs')
 
     amqp_dsn: AmqpDsn = os.getenv(
         'AMQP_URI', 'amqp://guest:guest@rabbitmq:5672'
@@ -35,8 +33,8 @@ class Settings(BaseSettings):
             raise ValueError("mongodb_collections cannot be empty")
         return collections
 
-    def get_mongodb_collection(cls, name: str):
-        if name not in cls.mongodb_collections:
+    def get_mongodb_collection(self, name: str): 
+        if name not in self.mongodb_collections.split(","): 
             logger.error(f" Collection {name} not found")
             raise ValueError(f"Collection {name} not found")
         return name
