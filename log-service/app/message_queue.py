@@ -1,7 +1,7 @@
 import asyncio
 import json
 from typing import Optional, Callable, Dict, Any
-from aio_pika import connect, Connection, Queue
+from aio_pika import connect, Connection, Queue, ExchangeType
 from aio_pika.abc import AbstractIncomingMessage
 from aio_pika.exceptions import AMQPError
 
@@ -38,15 +38,15 @@ async def on_message(message: AbstractIncomingMessage) -> Optional[Dict[str, Any
         return None
 
 
-async def save_queue_messages(queue: Queue, on_message: Callable) -> None:
-    async with queue.iterator() as queue_iter:
-        async for message in queue_iter:
-            decoded_message = await on_message(message)
-            if decoded_message is None:
-                continue
-            logger.info(f'listener: {decoded_message}')
+# async def save_queue_messages(queue: Queue, on_message: Callable) -> None:
+#     async with queue.iterator() as queue_iter:
+#         async for message in queue_iter:
+#             decoded_message = await on_message(message)
+#             if decoded_message is None:
+#                 continue
+#             logger.info(f'listener: {decoded_message}')
 
-            await save_message(decoded_message)
+#             await save_message(decoded_message)
 
 
 async def listen() -> None:
@@ -56,10 +56,25 @@ async def listen() -> None:
             connection = await connect(RABBITMQ_URL)
             async with connection:
                 channel = await connection.channel()
+                
+                topic_logs_exchange = await channel.declare_exchange(
+                    "topic_logs", ExchangeType.TOPIC,
+                )
+
                 queue = await channel.declare_queue('log-service', durable=True)
+                
+                await queue.bind(topic_logs_exchange, routing_key='card.created')
+
 
                 logger.info('Waiting for messages.')
-                await save_queue_messages(queue, on_message)
+                async with queue.iterator() as queue_iter:
+                    async for message in queue_iter:
+                        decoded_message = await on_message(message)
+                        if decoded_message is None:
+                            continue
+                        logger.info(f'listener: {decoded_message}')
+
+                        await save_message(decoded_message)
 
         except AMQPError as e:
             logger.error(f'RabbitMQ connection error: {e}')

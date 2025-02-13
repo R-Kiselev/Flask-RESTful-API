@@ -78,6 +78,6 @@ class AccountCardListRes(BaseListResource):
             'data': req_body
         }
         message_data = MessageSchema().dump(message)
-        MessageQueue().send_message_to_queue(message_data, 'log-service')
+        MessageQueue().send_message_to_queue(message_data, 'asdf.created')
 
         return response, status_code
