@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask import request
 from flask_jwt_extended import jwt_required, get_jwt
 
@@ -7,6 +9,8 @@ from app.models.account import Account
 from app.api.schemas.account import AccountSchema
 from app.commons.pagination import paginate
 from app.auth.utils import user_roles_required
+from app.extensions import message_queue_client
+from app.api.schemas.message import MessageSchema
 
 
 def check_account_access(jwt, account_id):
@@ -62,7 +66,19 @@ class AccountListRes(BaseListResource):
             return ACCESS_DENIED_ERROR
 
         req['bank_id'] = bank_id
-        return super().post()
+
+        response, status_code = super().post()
+
+        message = {
+            'user_id': jwt.get('user_id'),
+            'date': datetime.now(),
+            'message': f'Account created with ID: {response.get('item').get('id')}',
+            'data': req
+        }
+        message_data = MessageSchema().dump(message)
+        message_queue_client.send_message(message_data, 'account.created')
+
+        return response, status_code
 
 
 class ClientAccountListRes(BaseListResource):
@@ -88,4 +104,15 @@ class ClientAccountListRes(BaseListResource):
         req = request.json
         req['client_id'] = client_id
 
-        return super().post()
+        response, status_code = super().post()
+
+        message = {
+            'user_id': jwt.get('user_id'),
+            'date': datetime.now(),
+            'message': f'Account created with ID: {response.get('item').get('id')}',
+            'data': req
+        }
+        message_data = MessageSchema().dump(message)
+        message_queue_client.send_message(message_data, 'account.created')
+
+        return response, status_code
