@@ -1,6 +1,5 @@
 from flask_restful import request
 from flask_jwt_extended import jwt_required, get_jwt
-from datetime import datetime
 
 from app.commons.base_resources import BaseObjectResource, BaseListResource
 from app.commons.constants import ACCESS_DENIED_ERROR
@@ -9,8 +8,7 @@ from app.api.schemas.card import CardSchema
 from app.extensions import db
 from app.commons.pagination import paginate
 from app.auth.utils import user_roles_required
-from app.message_queue import MessageQueue
-from app.api.schemas.message import MessageSchema
+
 
 class CardObjectRes(BaseObjectResource):
     model = Card
@@ -69,15 +67,4 @@ class AccountCardListRes(BaseListResource):
         req_body = request.json
         req_body['account_id'] = account_id
 
-        response, status_code = super().post()
-
-        message = {
-            'user_id': jwt.get('user_id'),
-            'date': datetime.now(),
-            'message': f'Card created with ID: {response.get('item').get('id')}',
-            'data': req_body
-        }
-        message_data = MessageSchema().dump(message)
-        MessageQueue().send_message_to_queue(message_data, 'asdf.created')
-
-        return response, status_code
+        return super().post()
