@@ -27,8 +27,8 @@ RABBITMQ_URL = str(app_settings.amqp_dsn)
 class MessageQueueServer:
     def __init__(self,
                  uri: str = RABBITMQ_URL,
-                 queue_name: str = 'log-service',
-                 exchange_name: str = 'topic_logs',
+                 queue_name: str = 'email-service',
+                 exchange_name: str = 'topic_exchange',
                  routing_key: str = '*.created',
                  exchange_type: ExchangeType = ExchangeType.TOPIC,
                  retries: int = 3,
