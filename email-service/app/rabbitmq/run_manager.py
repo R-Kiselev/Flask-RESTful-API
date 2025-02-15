@@ -5,7 +5,7 @@ from ..logging import logger
 from ..config import app_settings
 
 
-class MessageQueueManager:
+class MessageQueueRunner:
     async def start_messages_listener(self):
         logger.info('Initializing message listener.')
         self.mqserver = MessageQueueServer(

@@ -1,25 +1,26 @@
 from fastapi import FastAPI, Request
 
-from .rabbitmq.run_manager import MessageQueueManager
-from .email_sender import send_email
+from .rabbitmq.run_manager import MessageQueueRunner
 
 
-app = FastAPI()
-mqtask = MessageQueueManager()
+def create_app() -> FastAPI:
+    app = FastAPI()
 
-app.add_event_handler("startup", mqtask.start_messages_listener)
-app.add_event_handler("shutdown", mqtask.stop_message_listener)
+    configure_services(app)
+    configure_event_handlers(app)
 
-@app.get("/")
-async def root():
-    return {"status": "ok"}
+    return app
 
 
-@app.post("/email")
-async def send(request: Request):
-    import json
-    data = await request.body()
-    data = json.loads(data)
-    await send_email(data=data)
+def configure_services(app: FastAPI) -> None:
+    app.state.message_queue_runner = MessageQueueRunner()
 
-    return {"status": "ok"}
+
+def configure_event_handlers(app: FastAPI) -> None:
+    app.add_event_handler(
+        "startup", app.state.message_queue_runner.start_messages_listener)
+    app.add_event_handler(
+        "shutdown", app.state.message_queue_runner.stop_message_listener)
+
+
+app = create_app()
