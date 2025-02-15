@@ -1,16 +1,35 @@
 from fastapi import FastAPI
 
-from .db import connect_and_init_db, close_db_connection, get_db_client
-from .message_queue import start_messages_saver
+from .db import connect_and_init_db, close_db_connection
 from .resources.logs import router as logs_router
+from .rabbitmq.run_manager import MessageQueueRunner
 
-app = FastAPI()
 
-app.add_event_handler("startup", connect_and_init_db)
-app.add_event_handler("shutdown", close_db_connection)
-app.add_event_handler("startup", start_messages_saver)
-app.include_router(logs_router)
+def create_app() -> FastAPI:
+    app = FastAPI()
 
-@app.get("/")
-async def root():
-    return {"status": "ok"}
+    configure_services(app)
+    configure_event_handlers(app)
+    add_routers(app)
+
+    return app
+
+
+def configure_services(app: FastAPI) -> None:
+    app.state.message_queue_runner = MessageQueueRunner()
+
+
+def configure_event_handlers(app: FastAPI) -> None:
+    app.add_event_handler("startup", connect_and_init_db)
+    app.add_event_handler("shutdown", close_db_connection)
+    app.add_event_handler(
+        "startup", app.state.message_queue_runner.start_messages_listener)
+    app.add_event_handler(
+        "shutdown", app.state.message_queue_runner.stop_message_listener)
+
+
+def add_routers(app: FastAPI) -> None:
+    app.include_router(logs_router)
+
+
+app = create_app()

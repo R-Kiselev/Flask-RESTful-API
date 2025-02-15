@@ -25,6 +25,8 @@ class Settings(BaseSettings):
         'AMQP_URI', 'amqp://guest:guest@rabbitmq:5672'
     )
     queue_name: str = os.getenv('QUEUE_NAME', 'log-service')
+    exchange_name: str = os.getenv('EXCHANGE_NAME', 'topic_exchange')
+    routing_key: str = os.getenv('ROUTING_KEY', 'account.created')
 
     @field_validator('mongodb_collections')
     def validate_collections(cls, collections):
@@ -33,8 +35,8 @@ class Settings(BaseSettings):
             raise ValueError("mongodb_collections cannot be empty")
         return collections
 
-    def get_mongodb_collection(self, name: str): 
-        if name not in self.mongodb_collections.split(","): 
+    def get_mongodb_collection(self, name: str):
+        if name not in self.mongodb_collections.split(","):
             logger.error(f" Collection {name} not found")
             raise ValueError(f"Collection {name} not found")
         return name
