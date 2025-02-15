@@ -1,73 +1,134 @@
 import json
+import uuid
+import time 
+
 from pika import BlockingConnection, ConnectionParameters, BasicProperties
 
 from .config import RABBITMQ_HOST, RABBITMQ_PORT
 
 
-RABBIT_REPLY = "amq.rabbitmq.reply-to"
+RABBIT_REPLY_QUEUE = "amq.rabbitmq.reply-to"
+
+
+class MessageQueueConnectionManager:
+    def __init__(self, 
+                 host: str = RABBITMQ_HOST,
+                 port: int = RABBITMQ_PORT,
+                 retries: int = 2, 
+                 interval: int = 3
+                ) -> None:
+        self.host = host
+        self.port = port
+        self.retries = retries
+        self.interval = interval
+        self.connection = None
+        self.channel = None
+
+    def connect(self):
+        retries = 0
+        
+        while True:
+            try:
+                self.connection = BlockingConnection(
+                    ConnectionParameters(
+                        host=self.host,
+                        port=self.port
+                    )
+                )
+                self.channel = self.connection.channel()
+
+                return self.connection, self.channel
+            except Exception as e:
+                if retries >= self.retries:
+                    raise
+
+                retries += 1
+                print(f"Connection failed: {e}")
+                time.sleep(self.interval * retries)
+
+    def close(self) -> None:
+        if self.channel:
+            self.channel.close()
+
+        if self.connection:
+            self.connection.close()
 
 
 class MessageQueue:
-    # Connect to RabbitMQ
+    def __init__(self,
+                 host=RABBITMQ_HOST,
+                 port=RABBITMQ_PORT,
+                 exchange_name: str = 'topic_exchange',
+                 exchange_type: str = 'topic',
+                 reply_queue: str = RABBIT_REPLY_QUEUE,
+                 timeout: int = 2
+                ):
+        self.exchange_name = exchange_name
+        self.exchange_type = exchange_type
+        self.reply_queue = reply_queue
+        self.timeout = timeout
 
-    # Define topic exchange:
-    #   - bank.created:
-    #       receivers:
-    #           email-service
-    #   - account.created
-    #       receivers:
-    #           email-service,
-    #           log-service
+        self.connect()
+        self.channel.exchange_declare(
+            exchange=self.exchange_name,
+            exchange_type=self.exchange_type
+        )
 
-    # *.created:
-    #   email-service
-    # account.created:
-    #   log-service
+    def connect(self):
+        self.connection, self.channel = MessageQueueConnectionManager().connect()
 
-    connection_params = ConnectionParameters(
-        host=RABBITMQ_HOST,
-        port=RABBITMQ_PORT
-    )
+    def on_reply(self, ch, method, props, body):
+        if self.corr_id == props.correlation_id:
+            # Assigning the response is crucial part of the consuming process
+            # Until responce is none and timeout is not reached, the main thread will be blocked 
+            self.response = body
+            self.delivery_tag = method.delivery_tag
 
-    def on_reply(self, ch, method_frame, properties, body):
-        ch.close()
-        return body.decode()
+    def setup_reply_queue(self):
+        self.corr_id = str(uuid.uuid4())
+        self.channel.basic_consume(
+            queue = self.reply_queue,
+            on_message_callback = self.on_reply,
+            auto_ack = True
+        )
 
-    def send_message_to_queue(self, message: dict, queue: str):
-        connection = BlockingConnection(self.connection_params)
-        channel = connection.channel()
-        with connection, channel:
-            message = json.dumps(message)
+    def get_reply_message(self):
+        start_time = time.time()
+        self.response = None
 
-            next(
-                channel.consume(
-                    queue=RABBIT_REPLY,
-                    auto_ack=True,
-                    inactivity_timeout=0.1
-                )
-            )
+        while self.response is None:
+            self.connection.process_data_events(time_limit=0.1)
 
-            # channel.basic_consume(
-            #     queue=RABBIT_REPLY,
-            #     on_message_callback=self.on_reply,
-            #     auto_ack=True
-            # )
+            if time.time() - start_time > self.timeout:
+                print("No reply from server")
 
-            channel.exchange_declare(exchange='topic_logs', exchange_type='topic')
-            channel.basic_publish(
-                exchange="topic_logs",
-                routing_key=queue,
-                body=message.encode(),
-                properties=BasicProperties(reply_to=RABBIT_REPLY)
-            )
-            print("sent:", message)
+                return None
+            
+        self.channel.basic_ack(delivery_tag=self.delivery_tag)
+        print("received:", self.response)
 
-            for (method, properties, body) in channel.consume(
-                queue=RABBIT_REPLY,
-                auto_ack=True,
-                inactivity_timeout=0.1
-            ):
-                response = self.on_reply(channel, method, properties, body)
-                print(f'Got response {response}')
-                return response
-            # channel.start_consuming()
+        return self.response.decode()
+
+    def send_message(self, message: dict, routing_key: str, need_reply: bool = False):
+        message = json.dumps(message)
+
+        if need_reply:
+            self.setup_reply_queue()
+
+        self.channel.basic_publish(
+            exchange=self.exchange_name,
+            routing_key=routing_key,
+            body=message.encode(),
+
+            # If need_reply is True, then set reply_to and correlation_id
+            properties=BasicProperties(
+                reply_to=self.reply_queue,
+                correlation_id=self.corr_id
+            ) if need_reply else None
+        )
+        print("sent:", message)
+
+        if need_reply:
+            return self.get_reply_message()
+        
+        return None
