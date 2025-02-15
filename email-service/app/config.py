@@ -43,6 +43,8 @@ class AppSettings(BaseSettings):
         'AMQP_URI', 'amqp://guest:guest@rabbitmq:5672'
     )
     queue_name: str = os.getenv('QUEUE_NAME', 'email-service')
+    exchange_name: str = os.getenv('EXCHANGE_NAME', 'topic_exchange')
+    routing_key: str = os.getenv('ROUTING_KEY', '*.created')
 
 
 email_settings = EmailSettings()
