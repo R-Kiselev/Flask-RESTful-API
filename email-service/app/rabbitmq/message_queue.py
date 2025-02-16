@@ -48,6 +48,7 @@ class MessageQueueServer:
         self.routing_key: str = routing_key
 
     async def setup_queue(self) -> None:
+        """Setup the queue and exchange only once during initialization or reconnection"""
         self.exchange = await self.channel.declare_exchange(
             name=self.exchange_name,
             type=self.exchange_type
@@ -66,6 +67,7 @@ class MessageQueueServer:
         self.queue = None
 
     async def on_message(self, incoming_message: AbstractIncomingMessage) -> Optional[Dict[str, Any]]:
+        """Process incoming message and send ack or nack, return decoded message"""
         try:
             decoded_message = incoming_message.body.decode()
             message = json.loads(decoded_message)
@@ -93,6 +95,7 @@ class MessageQueueServer:
             return None
 
     async def get_queue_messages(self) -> AsyncGenerator[Dict[str, Any]]:
+        """Get messages from the queue and yield decoded messages"""
         async with self.queue.iterator() as queue_iter:
             async for incoming_message in queue_iter:
                 decoded_message = await self.on_message(incoming_message)
@@ -110,6 +113,7 @@ class MessageQueueServer:
                     logger.info('Sent message to email')
 
             except Exception as e:
+                # If an error occurs, close the connection and reconnect
                 logger.error(
                     f"Error in listen loop: {e}. Attempting to reconnect.")
                 await self.close()

@@ -16,6 +16,7 @@ def create_app() -> FastAPI:
 
 
 def configure_services(app: FastAPI) -> None:
+    # app.state is a special attribute that allows you to store arbitrary data
     app.state.message_queue_runner = MessageQueueRunner()
 
 

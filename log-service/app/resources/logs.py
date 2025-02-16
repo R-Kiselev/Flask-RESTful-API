@@ -8,6 +8,9 @@ from motor.motor_asyncio import AsyncIOMotorCursor
 from ..pagination import paginate
 
 
+# Use the APIRouter class to create a new router. 
+# This router will be used to define the routes for the logs resource.
+# Then this router will be included in the main FastAPI app.
 router = APIRouter()
 mongodb_collection = settings.get_mongodb_collection('logs')
 
@@ -20,8 +23,10 @@ async def get_logs(request: Request, db=Depends(get_db_client)):
 
 @router.post("/logs", response_model=LogSchema, status_code=status.HTTP_201_CREATED)
 async def create_log(log: LogSchema, db=Depends(get_db_client)):
+    # Returns mongodb document object, not a dict
     inserted_doc = await db[mongodb_collection].insert_one(log.model_dump())
 
+    # Get the inserted document from the database, dict format
     created_log = await db[mongodb_collection].find_one({"_id": inserted_doc.inserted_id})
     return created_log
 

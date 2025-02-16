@@ -16,6 +16,7 @@ class MessageQueueRunner:
         )
 
         logger.info('Starting message listener in background.')
+        # Run the message listener in the background because it's an infinite loop
         self.task = asyncio.create_task(self.mqserver.run())
 
     async def stop_message_listener(self):

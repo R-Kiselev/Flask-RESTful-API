@@ -36,6 +36,7 @@ class MessageQueueConnectionManager:
                 return self.connection, self.channel
 
             except (AMQPConnectionError, AMQPError) as e:
+                # Retry connection if max retries not exceeded
                 if retries >= self.max_retries:
                     logger.critical(
                         "Failed to connect to RabbitMQ. Max retries exceeded. Error: %s", e)

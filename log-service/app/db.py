@@ -16,6 +16,10 @@ async def connect_and_init_db():
 
 
 async def get_db_client() -> AsyncIOMotorClient:
+    """ Usage:
+    - db = Depends(get_db_client) - in FastAPI route
+    - db = await get_db_client() - in async function
+    """
     db_name = settings.mongodb_name
     return db_client[db_name]
 

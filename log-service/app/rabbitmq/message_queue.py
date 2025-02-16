@@ -48,6 +48,7 @@ class MessageQueueServer:
         self.routing_key: str = routing_key
 
     async def setup_queue(self) -> None:
+        """Setup the queue and exchange only once during initialization"""
         self.exchange = await self.channel.declare_exchange(
             name=self.exchange_name,
             type=self.exchange_type
@@ -73,6 +74,7 @@ class MessageQueueServer:
         logger.info('Message saved to data storage')
 
     async def on_message(self, incoming_message: AbstractIncomingMessage) -> Optional[Dict[str, Any]]:
+        """Process incoming message and return the decoded message"""
         try:
             decoded_message = incoming_message.body.decode()
             message = json.loads(decoded_message)
@@ -97,6 +99,8 @@ class MessageQueueServer:
                     continue
 
                 logger.info('Yielding decoded message')
+
+                # Yield the message because we want to return messages one by one to make code cleaner
                 yield decoded_message
 
     async def listen(self) -> None:
@@ -107,6 +111,7 @@ class MessageQueueServer:
                     logger.info('listener: saved message')
 
             except Exception as e:
+                # If an error occurs, close the connection and try to reconnect
                 logger.error(
                     f"Error in listen loop: {e}. Attempting to reconnect.")
                 await self.close()

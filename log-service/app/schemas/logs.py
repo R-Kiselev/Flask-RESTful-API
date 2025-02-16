@@ -4,6 +4,7 @@ from typing import Optional
 
 
 class PyObjectId(str):
+    """Class used to convert mongodb _id to string"""
     @classmethod
     def __get_validators__(cls):
         yield cls.validate

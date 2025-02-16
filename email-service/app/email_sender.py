@@ -14,6 +14,7 @@ async def send_email(data: dict = None, subject: str = None) -> None:
     message["To"] = email_settings.email_receivers
     message.set_content(f"Message: {data}")
 
+    # establishing an encrypted connection between a server and a client
     context = ssl.create_default_context()
 
     try:
@@ -23,6 +24,7 @@ async def send_email(data: dict = None, subject: str = None) -> None:
             use_tls=True,
             tls_context=context
         ) as server:
+            # ehlo() is the SMTP command the client uses to tell the server that it is an SMTP client
             await server.ehlo()
             await server.login(email_settings.email_user, email_settings.email_app_password)
             await server.send_message(message)

@@ -25,6 +25,7 @@ class MessageQueueConnectionManager:
         self.interval: int = interval
 
     async def connect(self) -> Tuple[Connection, Channel]:
+        """Connect to RabbitMQ and return connection and channel. Retry connection if failed."""
         retries = 0
 
         while True:

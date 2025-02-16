@@ -22,7 +22,7 @@ class EmailSettings(BaseSettings):
     email_user: EmailStr = os.getenv(
         "email_user", "your_email_address@gmail.com")
 
-    # Check this link [StackOverflow](https://stackoverflow.com/a/27515833/22663290)
+    # Check readme for more info
     email_app_password: str = os.getenv(
         "email_app_password", "abcd abcd abcd abcd")
 

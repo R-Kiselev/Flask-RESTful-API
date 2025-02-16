@@ -49,7 +49,7 @@ class BankListRes(BaseListResource):
             message_data, 'bank.created', need_reply=True)
 
         if reply:
-            # Save message in log service using requests lib
+            # Send HTTP POST request to log-service /logs endpoint to save the message
             try:
                 res = requests.post(
                     url=LOG_SERVICE_URL + "/logs",
