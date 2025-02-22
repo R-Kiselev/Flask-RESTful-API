@@ -7,7 +7,8 @@ from pika import BlockingConnection, ConnectionParameters, BasicProperties
 from .config import RABBITMQ_HOST, RABBITMQ_PORT
 
 
-RABBIT_REPLY_QUEUE = "amq.rabbitmq.reply-to"
+# RABBIT_REPLY_QUEUE = "amq.rabbitmq.reply-to"
+RABBIT_REPLY_QUEUE = "callback_queue"
 
 
 class MessageQueueConnectionManager:
@@ -90,11 +91,12 @@ class MessageQueue:
             self.delivery_tag = method.delivery_tag
 
     def setup_reply_queue(self):
+        self.channel.queue_declare(self.reply_queue)
         self.corr_id = str(uuid.uuid4())
         self.channel.basic_consume(
             queue=self.reply_queue,
-            on_message_callback=self.on_reply,
-            auto_ack=True
+            on_message_callback=self.on_reply
+            # auto_ack=True
         )
 
     def get_reply_message(self):
@@ -106,12 +108,11 @@ class MessageQueue:
 
             if time.time() - start_time > self.timeout:
                 print("No reply from server")
-
+                # self.channel.basic_nack()
                 return None
 
-        self.channel.basic_ack(delivery_tag=self.delivery_tag)
         print("received:", self.response)
-
+        self.channel.basic_ack(delivery_tag=self.delivery_tag)
         return self.response.decode()
 
     def send_message(self, message: dict, routing_key: str, need_reply: bool = False):
