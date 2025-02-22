@@ -51,10 +51,10 @@ class BankListRes(BaseListResource):
         if reply:
             # Send HTTP POST request to log-service /logs endpoint to save the message
             try:
+                print('Sending HTTP request')
                 res = requests.post(
                     url=LOG_SERVICE_URL + "/logs",
                     json=message_data,
-                    verify=False,
                     timeout=1
                 )
                 print(f"Got response from log-service: {res.json()}")

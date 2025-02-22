@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from .db import connect_and_init_db, close_db_connection
 from .resources.logs import router as logs_router
@@ -8,11 +9,26 @@ from .rabbitmq.run_manager import MessageQueueRunner
 def create_app() -> FastAPI:
     app = FastAPI()
 
+    add_middleware(app)
     configure_services(app)
     configure_event_handlers(app)
     add_routers(app)
 
     return app
+
+
+def add_middleware(app: FastAPI) -> None:
+    origins = [
+        'https://localhost:5000'
+    ]
+
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins = origins,
+        allow_credentials = True,
+        allow_methods = ['*'],
+        allow_headers = ['*']       
+    )
 
 
 def configure_services(app: FastAPI) -> None:
