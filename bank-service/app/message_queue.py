@@ -4,11 +4,7 @@ import time
 
 from pika import BlockingConnection, ConnectionParameters, BasicProperties
 
-from .config import RABBITMQ_HOST, RABBITMQ_PORT
-
-
-# RABBIT_REPLY_QUEUE = "amq.rabbitmq.reply-to"
-RABBIT_REPLY_QUEUE = "callback_queue"
+from .config import RABBITMQ_HOST, RABBITMQ_PORT, CALLBACK_QUEUE
 
 
 class MessageQueueConnectionManager:
@@ -61,7 +57,7 @@ class MessageQueue:
                  port=RABBITMQ_PORT,
                  exchange_name: str = 'topic_exchange',
                  exchange_type: str = 'topic',
-                 reply_queue: str = RABBIT_REPLY_QUEUE,
+                 reply_queue: str = CALLBACK_QUEUE,
                  timeout: int = 2
                  ):
         self.exchange_name = exchange_name

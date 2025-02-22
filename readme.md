@@ -275,54 +275,55 @@ and change connection URI host from `localhost` to `service_name` (e.g., `db`).
 ### BankService
 
 ```env
-    FLASK_ENV = 'development'
-    FLASK_APP = 'app.app:create_app'
-    FLASK_CERT = 'adhoc'
-    SECRET_KEY = 'SECRET'
-    JWT_SECRET_KEY = "JWT_SECRET"
+FLASK_ENV = 'development'
+FLASK_APP = 'app.app:create_app'
+FLASK_CERT = 'adhoc'
+SECRET_KEY = 'SECRET'
+JWT_SECRET_KEY = "JWT_SECRET"
 
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:pass@`localhost`:3306/mybank'
+SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:pass@localhost:3306/mybank'
 
-    RABBITMQ_HOST = "localhost"
-    RABBITMQ_PORT = "5672"
+RABBITMQ_HOST = "localhost"
+RABBITMQ_PORT = "5672"
 
-    DEFAULT_ROLE = 'user'
+DEFAULT_ROLE = 'user'
 
-    ADMIN_EMAIL = 'admin@gmail.com'
-    ADMIN_PASS = 'password'
+ADMIN_EMAIL = 'admin@gmail.com'
+ADMIN_PASS = 'password'
 
-    LOG_SERVICE_URL = "https://localhost:8000"
+LOG_SERVICE_URL = "https://localhost:8000"
+CALLBACK_QUEUE = "doesnt_matter"
 ```
 `FLASK_ENV` is set to `development` by default. This automatically enables debug mode and changes errorhandlers behavior (look at `config.py`).
 
 ### LogService
 
 ```env
-    MONGODB_URI="mongodb://localhost:27017"
-    MONGODB_NAME="log-service"
-    MONGODB_COLLECTIONS="logs"
+MONGODB_URI="mongodb://localhost:27017"
+MONGODB_NAME="log-service"
+MONGODB_COLLECTIONS="logs"
 
-    AMQP_URI = "amqp://guest:guest@localhost:5672/"
-    QUEUE_NAME = "log-service"
-    EXCHANGE_NAME = "topic_exchange"
-    ROUTING_KEY = "account.created"
+AMQP_URI = "amqp://guest:guest@localhost:5672/"
+QUEUE_NAME = "log-service"
+EXCHANGE_NAME = "topic_exchange"
+ROUTING_KEY = "account.created"
 ```
 
 ### EmailService
 
 ```env
-    AMQP_URI = "amqp://guest:guest@localhost:5672/"
-    QUEUE_NAME = "email-service"
-    EXCHANGE_NAME = "topic_exchange"
-    ROUTING_KEY = "*.created"
+AMQP_URI = "amqp://guest:guest@localhost:5672/"
+QUEUE_NAME = "email-service"
+EXCHANGE_NAME = "topic_exchange"
+ROUTING_KEY = "*.created"
 
-    email_port = "465"  # SMTP SSL Port (ex. 465)
-    email_host = "smtp.gmail.com"  # SMTP host (ex. smtp.gmail.com)
-    email_user = "your_address@gmail.com"  # SMTP Login credentials
-    email_app_password = "abcd abcd abcd abcd"  # SMTP Login credentials. Look at this [article](https://support.google.com/accounts/answer/185833?hl=en)
+email_port = "465"  # SMTP SSL Port (ex. 465)
+email_host = "smtp.gmail.com"  # SMTP host (ex. smtp.gmail.com)
+email_user = "your_address@gmail.com"  # SMTP Login credentials
+email_app_password = "abcd abcd abcd abcd"  # SMTP Login credentials. Look at this [article](https://support.google.com/accounts/answer/185833?hl=en)
 
-    email_receivers =  "test@gmail.com, example@gmail.com" # Receivers, can be multiple. Configured here for convenience.
-    email_subject = "Message from Bank service" 
+email_receivers =  "test@gmail.com, example@gmail.com" # Receivers, can be multiple. Configured here for convenience.
+email_subject = "Message from Bank service" 
 ```
 
 ## Authentication
@@ -619,14 +620,12 @@ Due to the infrequent use of the message queue within the BankService, the conne
     - Consumers:
         - EmailService: Consumes this message.
             - Step 1: Sends an email notification.
-            - Step 2: Acknowledgment: Sends an ACK message back to the message broker. Sends a message into [amq.rabbitmq.reply-to](https://www.rabbitmq.com/docs/direct-reply-to) queue.
+            - Step 2: Acknowledgment: Sends an ACK message back to the message broker. Sends a message into message queue, declared in the bank service.
     - BankService (ACK Handling):
         - Trigger: BankService listens for and receives the acknowledgment (ACK) message sent by EmailService.
         - Action: Upon receiving the ACK, BankService makes an HTTP request to the LogService. This ensures that the logging only occurs after successful email confirmation.
 
 #### Key Considerations & Design Choices:
-
-- Reply-To Queue: The use of the [amq.rabbitmq.reply-to](https://www.rabbitmq.com/docs/direct-reply-to) queue for sending acknowledgments back to the BankService ensures that the ACK message is routed correctly and received by the appropriate consumer. This pattern is commonly used in RPC-style communication.
 
 - Message Acknowledgments (ACKs): The use of acknowledgments in the Bank Creation scenario ensures that the LogService only logs the event after the EmailService has successfully sent the email notification.
 
